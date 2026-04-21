@@ -251,14 +251,21 @@
             <span class="brand-name">Trạm Văn</span>
         </a>
         
-        <div class="sidebar-menu">
+       <div class="sidebar-menu">
             <span class="menu-label">Cộng đồng</span>
             <a href="/danh-sach"><i class="bi bi-grid-1x2"></i> Thư Viện Tài Liệu</a>
             <a href="/"><i class="bi bi-stars"></i> Tác Phẩm Nổi Bật</a>
             <a href="#"><i class="bi bi-chat-heart"></i> Góc Cảm Nhận</a>
 
+            <% if (typeof user !== 'undefined' && user && user.QuyenHan === 'admin') { %>
+                <span class="menu-label mt-4" style="color: #ea580c;">Quản trị hệ thống</span>
+                <a href="/admin/dashboard" style="color: #ea580c; font-weight: bold;"><i class="bi bi-speedometer2"></i> Dashboard Thống Kê</a>
+                <a href="/admin/them-the-loai" style="color: #ea580c;"><i class="bi bi-tags"></i> Quản Lý Thể Loại</a>
+                <a href="/admin/duyet-bai" style="color: #ea580c;"><i class="bi bi-check2-circle"></i> Duyệt Bài Viết</a>
+            <% } %>
+
             <span class="menu-label mt-4">Cá nhân</span>
-            <a href="/gui-bai" class="active"><i class="bi bi-cloud-arrow-up"></i> Gửi Bài Viết</a>
+            <a href="/gui-bai"><i class="bi bi-cloud-arrow-up"></i> Gửi Bài Viết</a>
             <a href="#"><i class="bi bi-journal-text"></i> Bài Đã Đăng</a>
             <a href="#"><i class="bi bi-bookmark-star"></i> Tủ Sách Trạm Văn</a>
             <a href="#"><i class="bi bi-envelope"></i> Hòm Thư Tâm Sự</a>

@@ -1,21 +1,47 @@
 const express = require('express');
 const router = express.Router();
-const ObjectTheLoai = require('../models/theloai'); // Lùi 1 cấp để vào thư mục models
+const TheLoai = require('../models/theloai');
 
-// 1. Hiển thị trang Danh mục các thể loại
-router.get('/danh-muc', async (req, res) => {
+// Middleware kiểm tra quyền admin nhanh
+const isAdmin = (req, res, next) => {
+    if (req.session.user && req.session.user.QuyenHan === 'admin') return next();
+    res.status(403).send('Cấm truy cập! Bạn không phải Admin hoặc đã hết phiên đăng nhập.');
+};
+
+// 1. Hiển thị giao diện Quản lý Thể loại
+router.get('/admin/them-the-loai', isAdmin, async (req, res) => {
     try {
-        // Sau này mình sẽ dùng ObjectTheLoai.find() để lấy dữ liệu từ DB truyền ra giao diện
-        res.send('🚧 Giao diện Danh mục Thể loại đang chờ lắp ráp...');
+        const danhSachTheLoai = await TheLoai.find().sort({ _id: -1 });
+        res.render('admin/them-the-loai', { danhSachTheLoai, error: null });
     } catch (err) {
-        res.status(500).send('Lỗi: ' + err.message);
+        res.status(500).send(err.message);
     }
 });
 
-// 2. Hiển thị danh sách các bài văn thuộc 1 thể loại cụ thể (Lọc bài viết)
-router.get('/the-loai/:id', async (req, res) => {
-    // :id là tham số động. VD: /the-loai/123456
-    res.send(`🚧 Đang tải các bài văn thuộc Thể loại có ID: ${req.params.id}...`);
+// 2. Xử lý Thêm Thể loại
+router.post('/admin/them-the-loai', isAdmin, async (req, res) => {
+    try {
+        const { TenTheLoai, MoTa } = req.body;
+        const check = await TheLoai.findOne({ TenTheLoai });
+        if (check) {
+            const danhSachTheLoai = await TheLoai.find().sort({ _id: -1 });
+            return res.render('admin/them-the-loai', { danhSachTheLoai, error: 'Thể loại đã tồn tại!' });
+        }
+        await new TheLoai({ TenTheLoai, MoTa }).save();
+        res.redirect('/admin/them-the-loai');
+    } catch (err) {
+        res.status(500).send(err.message);
+    }
+});
+
+// 3. Xử lý Xóa Thể loại
+router.get('/admin/xoa-the-loai/:id', isAdmin, async (req, res) => {
+    try {
+        await TheLoai.findByIdAndDelete(req.params.id);
+        res.redirect('/admin/them-the-loai');
+    } catch (err) {
+        res.status(500).send(err.message);
+    }
 });
 
 module.exports = router;

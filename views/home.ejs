@@ -111,11 +111,18 @@
             <span class="brand-name">Trạm Văn</span>
         </a>
         
-        <div class="sidebar-menu">
+       <div class="sidebar-menu">
             <span class="menu-label">Cộng đồng</span>
             <a href="/danh-sach"><i class="bi bi-grid-1x2"></i> Thư Viện Tài Liệu</a>
-            <a href="/" class="active"><i class="bi bi-stars"></i> Tác Phẩm Nổi Bật</a>
+            <a href="/"><i class="bi bi-stars"></i> Tác Phẩm Nổi Bật</a>
             <a href="#"><i class="bi bi-chat-heart"></i> Góc Cảm Nhận</a>
+
+            <% if (typeof user !== 'undefined' && user && user.QuyenHan === 'admin') { %>
+                <span class="menu-label mt-4" style="color: #ea580c;">Quản trị hệ thống</span>
+                <a href="/admin/dashboard" style="color: #ea580c; font-weight: bold;"><i class="bi bi-speedometer2"></i> Dashboard Thống Kê</a>
+                <a href="/admin/them-the-loai" style="color: #ea580c;"><i class="bi bi-tags"></i> Quản Lý Thể Loại</a>
+                <a href="/admin/duyet-bai" style="color: #ea580c;"><i class="bi bi-check2-circle"></i> Duyệt Bài Viết</a>
+            <% } %>
 
             <span class="menu-label mt-4">Cá nhân</span>
             <a href="/gui-bai"><i class="bi bi-cloud-arrow-up"></i> Gửi Bài Viết</a>
@@ -170,48 +177,29 @@
             </div>
 
             <div class="row g-4">
-                <div class="col-md-4">
-                    <div class="essay-card">
-                        <div>
-                            <span class="badge-category"><i class="bi bi-journal-bookmark me-1"></i> Văn Nghị Luận</span>
-                            <h3 class="essay-title">Vẻ đẹp bi tráng của hình tượng người lính Tây Tiến</h3>
-                            <p class="essay-excerpt">Phân tích đoạn 3 của bài thơ Tây Tiến để thấy được nét lãng mạn hòa quyện cùng tinh thần bi tráng của những người thanh niên Hà Nội xếp bút nghiên lên đường chiến đấu...</p>
-                        </div>
-                        <div class="essay-footer">
-                            <span class="author-info"><i class="bi bi-person-circle text-muted me-1"></i> Vy Admin</span>
-                            <a href="#" class="btn-read">Đọc tiếp <i class="bi bi-arrow-right"></i></a>
-                        </div>
+    <% if (typeof danhSachBai !== 'undefined' && danhSachBai.length > 0) { %>
+        <% danhSachBai.forEach(bai => { %>
+            <div class="col-md-4">
+                <div class="essay-card">
+                    <div>
+                        <span class="badge-category"><i class="bi bi-journal-bookmark me-1"></i> Trạm Văn</span>
+                        <h3 class="essay-title"><%= bai.TieuDe %></h3>
+                        <p class="essay-excerpt"><%= bai.TomTat %></p>
                     </div>
-                </div>
-
-                <div class="col-md-4">
-                    <div class="essay-card">
-                        <div>
-                            <span class="badge-category"><i class="bi bi-vector-pen me-1"></i> Cảm Nhận Thơ Ca</span>
-                            <h3 class="essay-title">Khát vọng tình yêu mãnh liệt trong bài thơ Sóng</h3>
-                            <p class="essay-excerpt">Xuân Quỳnh đã mượn hình tượng "Sóng" để nói lên những cung bậc cảm xúc phức tạp, những trăn trở và khát khao muôn đời của người phụ nữ trong tình yêu...</p>
-                        </div>
-                        <div class="essay-footer">
-                            <span class="author-info"><i class="bi bi-person-circle text-muted me-1"></i> Nhật Tân</span>
-                            <a href="#" class="btn-read">Đọc tiếp <i class="bi bi-arrow-right"></i></a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-md-4">
-                    <div class="essay-card">
-                        <div>
-                            <span class="badge-category"><i class="bi bi-lightbulb me-1"></i> Nghị Luận Xã Hội</span>
-                            <h3 class="essay-title">Áp lực đồng trang lứa (Peer Pressure) trong giới trẻ</h3>
-                            <p class="essay-excerpt">Bàn luận về nguyên nhân, hệ lụy và cách giới trẻ Việt Nam đối mặt với những áp lực vô hình từ thành công của những người bạn cùng thế hệ...</p>
-                        </div>
-                        <div class="essay-footer">
-                            <span class="author-info"><i class="bi bi-person-circle text-muted me-1"></i> Người Vô Danh</span>
-                            <a href="#" class="btn-read">Đọc tiếp <i class="bi bi-arrow-right"></i></a>
-                        </div>
+                    <div class="essay-footer">
+                        <span class="author-info"><i class="bi bi-person-circle text-muted me-1"></i> <%= bai.TacGia_id ? bai.TacGia_id.HoTen : 'Vô danh' %></span>
+                        <a href="#" class="btn-read">Đọc tiếp <i class="bi bi-arrow-right"></i></a>
                     </div>
                 </div>
             </div>
+        <% }) %>
+    <% } else { %>
+        <div class="col-12 text-center text-muted py-5">
+            <i class="bi bi-inbox fs-1"></i>
+            <p class="mt-2">Chưa có tác phẩm nào được xuất bản. Hãy là người đầu tiên gửi bài!</p>
+        </div>
+    <% } %>
+</div>
 
         </div>
     </main>
