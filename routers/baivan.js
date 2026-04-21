@@ -114,4 +114,35 @@ router.post('/admin/xu-ly-bai/:id', async (req, res) => {
     } catch (err) { res.status(500).send(err.message); }
 });
 
+// Trang quản lý tất cả bài viết (Dành cho Admin)
+router.get('/admin/quan-ly-bai-viet', async (req, res) => {
+    // Kiểm tra quyền Admin
+    if (!req.session.user || req.session.user.QuyenHan !== 'admin') {
+        return res.status(403).send('Cấm truy cập');
+    }
+
+    try {
+        // Lấy tất cả bài viết, nạp thêm thông tin Tác giả và Thể loại
+        const danhSachTatCa = await BaiVan.find()
+            .populate('TacGia_id', 'HoTen')
+            .populate('TheLoai_id', 'TenTheLoai')
+            .sort({ NgayDang: -1 });
+
+        res.render('admin/quan-ly-bai-viet', { danhSachTatCa });
+    } catch (err) {
+        res.status(500).send('Lỗi: ' + err.message);
+    }
+});
+
+// Route xóa bài viết (Nếu Admin thấy bài vi phạm)
+router.get('/admin/xoa-bai/:id', async (req, res) => {
+    if (!req.session.user || req.session.user.QuyenHan !== 'admin') return res.status(403).send('Cấm truy cập');
+    try {
+        await BaiVan.findByIdAndDelete(req.params.id);
+        res.redirect('/admin/quan-ly-bai-viet');
+    } catch (err) {
+        res.status(500).send(err.message);
+    }
+});
+
 module.exports = router;

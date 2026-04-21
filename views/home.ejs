@@ -111,36 +111,33 @@
             <span class="brand-name">Trạm Văn</span>
         </a>
         
-       <div class="sidebar-menu">
-            <span class="menu-label">Cộng đồng</span>
-            <a href="/danh-sach"><i class="bi bi-grid-1x2"></i> Thư Viện Tài Liệu</a>
-            <a href="/"><i class="bi bi-stars"></i> Tác Phẩm Nổi Bật</a>
-            <a href="#"><i class="bi bi-chat-heart"></i> Góc Cảm Nhận</a>
+        <div class="sidebar-menu d-flex flex-column h-100" style="padding-bottom: 0;">
+            <div>
+                <span class="menu-label">Cộng đồng</span>
+                <a href="/danh-sach"><i class="bi bi-grid-1x2"></i> Thư Viện Tài Liệu</a>
+                <a href="/" class="active"><i class="bi bi-stars"></i> Tác Phẩm Nổi Bật</a>
+                <a href="#"><i class="bi bi-chat-heart"></i> Góc Cảm Nhận</a>
+
+                <span class="menu-label mt-4">Cá nhân</span>
+                <a href="/gui-bai"><i class="bi bi-cloud-arrow-up"></i> Gửi Bài Viết</a>
+                <a href="#"><i class="bi bi-journal-text"></i> Bài Đã Đăng</a>
+                <a href="#"><i class="bi bi-bookmark-star"></i> Tủ Sách Trạm Văn</a>
+                <a href="#"><i class="bi bi-envelope"></i> Hòm Thư Tâm Sự</a>
+            </div>
 
             <% if (typeof user !== 'undefined' && user && user.QuyenHan === 'admin') { %>
-                <span class="menu-label mt-4" style="color: #ea580c;">Quản trị hệ thống</span>
-                <a href="/admin/dashboard" style="color: #ea580c; font-weight: bold;"><i class="bi bi-speedometer2"></i> Dashboard Thống Kê</a>
-                <a href="/admin/them-the-loai" style="color: #ea580c;"><i class="bi bi-tags"></i> Quản Lý Thể Loại</a>
-                <a href="/admin/duyet-bai" style="color: #ea580c;"><i class="bi bi-check2-circle"></i> Duyệt Bài Viết</a>
+                <div class="mt-auto pt-3 border-top" style="border-color: rgba(67, 90, 36, 0.15) !important; padding: 0 20px 20px 20px;">
+                    <a href="/admin/dashboard" class="btn w-100 shadow-sm" style="background-color: var(--primary-color); color: white; border-radius: 10px; font-weight: 600; padding: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 0;">
+                        <i class="bi bi-shield-lock me-2"></i> Vào Trang Quản Trị
+                    </a>
+                </div>
             <% } %>
-
-            <span class="menu-label mt-4">Cá nhân</span>
-            <a href="/gui-bai"><i class="bi bi-cloud-arrow-up"></i> Gửi Bài Viết</a>
-            <a href="#"><i class="bi bi-journal-text"></i> Bài Đã Đăng</a>
-            <a href="#"><i class="bi bi-bookmark-star"></i> Tủ Sách Trạm Văn</a>
-            <a href="#"><i class="bi bi-envelope"></i> Hòm Thư Tâm Sự</a>
-        </div>
-
-        <div class="p-4 mt-auto">
-            <div class="p-3 rounded-4 small" style="background-color: rgba(255,255,255,0.4); color: var(--primary-color); font-weight: 500;">
-                <i class="bi bi-info-circle me-1"></i> Trạm Văn v1.0
-            </div>
         </div>
     </aside>
 
     <main class="main-content">
         <header class="top-bar">
-            <% if (user) { %>
+            <% if (typeof user !== 'undefined' && user) { %>
                 <div class="d-flex align-items-center gap-3">
                     <a href="#" class="icon-btn-dark" title="Cài đặt">
                         <i class="bi bi-gear-fill"></i>
