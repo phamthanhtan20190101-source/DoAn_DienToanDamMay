@@ -56,6 +56,13 @@
             <p class="text-muted small">Khơi nguồn đam mê văn học</p>
         </div>
 
+        <% if (typeof error !== 'undefined' && error) { %>
+            <div class="alert alert-danger p-2 text-center small"><%= error %></div>
+        <% } %>
+        <% if (typeof success !== 'undefined' && success) { %>
+            <div class="alert alert-success p-2 text-center small"><%= success %></div>
+        <% } %>
+
         <form action="/dang-nhap" method="POST">
             <div class="mb-3">
                 <label for="TenDangNhap" class="form-label text-muted">Tên đăng nhập</label>
