@@ -3,14 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trạm Văn - Tác Phẩm Nổi Bật</title>
+    <title><%= (typeof titlePage !== 'undefined') ? titlePage : 'Trạm Văn' %></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <link href="https://fonts.googleapis.com/css2?family=Judson:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     
     <style>
-        /* GIỮ NGUYÊN CSS CƠ BẢN CỦA PROJECT */  
-        /* --- MÀU SẮC CHÍNH CỦA TRẠM VĂN --- */
         :root {
             --primary-color: #435a24; 
             --bg-color: #eef7e8;      
@@ -29,103 +27,22 @@
         .sidebar a { padding: 0.85rem 1.5rem; color: var(--primary-color); text-decoration: none; display: flex; align-items: center; gap: 12px; font-weight: 500; transition: 0.2s; }
         .sidebar a:hover, .sidebar a.active { background-color: rgba(255, 255, 255, 0.4); border-left: 4px solid var(--primary-color); font-weight: 600; }
         .main-content { flex-grow: 1; margin-left: 280px; width: calc(100% - 280px); }
-        header.top-bar { 
-            background: var(--white); 
-            padding: 1rem 2rem; 
-            display: flex; 
-            justify-content: flex-end; 
-            align-items: center; 
-            box-shadow: 0 2px 10px rgba(0,0,0,0.03); 
-            
-            /* --- THIẾT LẬP ĐỂ CÓ THỂ ẨN/HIỆN --- */
-            position: fixed; 
-            top: 0; 
-            right: 0;
-            width: calc(100% - 280px); 
-            z-index: 900; 
-            transition: transform 0.3s ease-in-out; /* Tạo hiệu ứng trượt mượt 0.3 giây */
-        }
-
-        /* Class này sẽ được JavaScript thêm vào khi cuộn xuống */
-        .top-bar-hidden {
-            transform: translateY(-100%); /* Đẩy thanh bar lên trên khuất màn hình */
-        }
+        header.top-bar { background: var(--white); padding: 1rem 2rem; display: flex; justify-content: flex-end; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.03); position: fixed; top: 0; right: 0; width: calc(100% - 280px); z-index: 900; transition: transform 0.3s ease-in-out; }
+        .top-bar-hidden { transform: translateY(-100%); }
         .icon-btn-dark { width: 42px; height: 42px; border-radius: 50%; background-color: var(--icon-bg-dark); color: #e3e5e8; display: flex; align-items: center; justify-content: center; text-decoration: none; border: none; transition: 0.2s; font-size: 1.2rem; cursor: pointer; }
         .icon-btn-dark:hover { background-color: var(--icon-bg-hover); color: #ffffff; }
-        .dropdown-toggle-hide-arrow::after { display: none !important; }
         .btn-auth-outline { border: 1px solid #dcdcdc; color: #555; font-weight: 500; text-decoration: none; }
-        .btn-auth-outline:hover { background-color: #f8f9fa; color: #333; }
         .btn-auth-solid { background-color: var(--primary-color); color: var(--white); font-weight: 500; border: 1px solid var(--primary-color); text-decoration: none; }
-        .btn-auth-solid:hover { background-color: var(--accent-color); color: var(--white); }
-        
-        .page-container { 
-            padding: 3rem; 
-            padding-top: 120px; /* Thêm dòng này để đẩy nội dung xuống khỏi Top-bar */
-            max-width: 1200px; 
-            margin: 0 auto; 
-        }
-
+        .page-container { padding: 3rem; padding-top: 120px; max-width: 1200px; margin: 0 auto; }
         .hero-title { font-family: 'Judson', serif; font-weight: 700; color: var(--primary-color); font-size: 2.5rem; margin-bottom: 1rem; }
-        
-        .essay-card {
-            background: var(--white);
-            border-radius: 16px;
-            padding: 1.5rem;
-            border: none;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
-            transition: all 0.3s ease;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-        }
-        .essay-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(67, 90, 36, 0.1);
-        }
-        .badge-category {
-            background-color: var(--bg-color);
-            color: var(--primary-color);
-            padding: 0.4rem 1rem;
-            border-radius: 50px;
-            font-weight: 600;
-            font-size: 0.8rem;
-            display: inline-block;
-            margin-bottom: 1rem;
-        }
-        .essay-title {
-            font-family: 'Judson', serif;
-            font-weight: 700;
-            font-size: 1.4rem;
-            color: #222;
-            margin-bottom: 0.8rem;
-            line-height: 1.4;
-        }
-        .essay-excerpt {
-            color: #666;
-            font-size: 0.95rem;
-            line-height: 1.6;
-            margin-bottom: 1.5rem;
-            flex-grow: 1;
-        }
-        .essay-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-top: 1px solid #eee;
-            padding-top: 1rem;
-        }
+        .essay-card { background: var(--white); border-radius: 16px; padding: 1.5rem; border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.03); transition: all 0.3s ease; height: 100%; display: flex; flex-direction: column; }
+        .essay-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(67, 90, 36, 0.1); }
+        .badge-category { background-color: var(--bg-color); color: var(--primary-color); padding: 0.4rem 1rem; border-radius: 50px; font-weight: 600; font-size: 0.8rem; display: inline-block; margin-bottom: 1rem; }
+        .essay-title { font-family: 'Judson', serif; font-weight: 700; font-size: 1.4rem; color: #222; margin-bottom: 0.8rem; line-height: 1.4; }
+        .essay-excerpt { color: #666; font-size: 0.95rem; line-height: 1.6; margin-bottom: 1.5rem; flex-grow: 1; }
+        .essay-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #eee; padding-top: 1rem; }
         .author-info { font-size: 0.9rem; color: #555; font-weight: 500; }
-        .btn-read {
-            background: none;
-            border: none;
-            color: var(--primary-color);
-            font-weight: 600;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            transition: 0.2s;
-        }
+        .btn-read { background: none; border: none; color: var(--primary-color); font-weight: 600; text-decoration: none; display: flex; align-items: center; gap: 5px; transition: 0.2s; }
         .btn-read:hover { color: var(--accent-color); gap: 8px; }
     </style>
 </head>
@@ -140,16 +57,21 @@
         <div class="sidebar-menu d-flex flex-column h-100" style="padding-bottom: 0;">
             <div>
                 <span class="menu-label">Cộng đồng</span>
-                <a href="/danh-sach"><i class="bi bi-grid-1x2"></i> Thư Viện Tài Liệu</a>
-                <a href="/" class="active"><i class="bi bi-stars"></i> Tác Phẩm Nổi Bật</a>
+                <a href="/danh-sach" class="<%= (typeof titlePage !== 'undefined' && titlePage === 'Thư Viện Tài Liệu') ? 'active' : '' %>">
+                    <i class="bi bi-grid-1x2"></i> Thư Viện Tài Liệu
+                </a>
+                
+                <a href="/" class="<%= (typeof titlePage === 'undefined' || titlePage === 'Tác Phẩm Nổi Bật') ? 'active' : '' %>">
+                    <i class="bi bi-stars"></i> Tác Phẩm Nổi Bật
+                </a>
+                
                 <a href="#"><i class="bi bi-chat-heart"></i> Góc Cảm Nhận</a>
 
                 <span class="menu-label mt-4">Cá nhân</span>
-                
                 <% if (typeof user !== 'undefined' && user) { %>
                     <a href="/gui-bai"><i class="bi bi-cloud-arrow-up"></i> Gửi Bài Viết</a>
                     <a href="/bai-da-dang"><i class="bi bi-journal-text"></i> Bài Đã Đăng</a>
-                    <a href="/tu-sach"><i class="bi bi-bookmark-star"></i> Tủ Sách Trạm Văn</a>
+                    <a href="/tu-sach" class="<%= (typeof isTuSach !== 'undefined' && isTuSach) ? 'active' : '' %>"><i class="bi bi-bookmark-star"></i> Tủ Sách Trạm Văn</a>
                     <a href="/hom-thu"><i class="bi bi-envelope"></i> Hòm Thư Tâm Sự</a>
                 <% } else { %>
                     <a href="/dang-nhap"><i class="bi bi-cloud-arrow-up"></i> Gửi Bài Viết</a>
@@ -173,9 +95,7 @@
         <header class="top-bar">
             <% if (typeof user !== 'undefined' && user) { %>
                 <div class="d-flex align-items-center gap-3">
-                    <a href="#" class="icon-btn-dark" title="Cài đặt">
-                        <i class="bi bi-gear-fill"></i>
-                    </a>
+                    <a href="#" class="icon-btn-dark" title="Cài đặt"><i class="bi bi-gear-fill"></i></a>
                     <div class="dropdown">
                         <button class="icon-btn-dark dropdown-toggle-hide-arrow" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Tài khoản">
                             <i class="bi bi-person-fill"></i>
@@ -199,39 +119,75 @@
         <div class="page-container">
             <div class="d-flex justify-content-between align-items-end mb-5">
                 <div>
-                    <h1 class="hero-title">Tác Phẩm Nổi Bật</h1>
-                    <p class="text-muted fs-5 mb-0">Tuyển tập những bài văn được cộng đồng đánh giá cao nhất tuần này.</p>
+                    <h1 class="hero-title"><%= (typeof titlePage !== 'undefined') ? titlePage : 'Tác Phẩm Nổi Bật' %></h1>
+                    <p class="text-muted fs-5 mb-0">
+                        <% if (typeof isTuSach !== 'undefined' && isTuSach) { %>
+                            Lưu giữ những áng văn tâm đắc của bạn.
+                        <% } else if (typeof titlePage !== 'undefined' && titlePage === 'Thư Viện Tài Liệu') { %>
+                            Khám phá kho tàng tri thức với hàng trăm bài văn xuất sắc.
+                        <% } else { %>
+                            Tuyển tập những bài văn được cộng đồng đánh giá cao nhất.
+                        <% } %>
+                    </p>
                 </div>
                 <a href="/gui-bai" class="btn btn-auth-solid rounded-pill px-4 py-2 shadow-sm">
                     <i class="bi bi-pen me-2"></i> Viết bài ngay
                 </a>
             </div>
 
-            <div class="row g-4">
-    <% if (typeof danhSachBai !== 'undefined' && danhSachBai.length > 0) { %>
-        <% danhSachBai.forEach(bai => { %>
-            <div class="col-md-4">
-                <div class="essay-card">
-                    <div>
-                        <span class="badge-category"><i class="bi bi-journal-bookmark me-1"></i> Trạm Văn</span>
-                        <h3 class="essay-title"><%= bai.TieuDe %></h3>
-                        <p class="essay-excerpt"><%= bai.TomTat %></p>
-                    </div>
-                    <div class="essay-footer">
-                        <span class="author-info"><i class="bi bi-person-circle text-muted me-1"></i> <%= bai.TacGia_id ? bai.TacGia_id.HoTen : 'Vô danh' %></span>
-                        <a href="#" class="btn-read">Đọc tiếp <i class="bi bi-arrow-right"></i></a>
+            <% if (typeof isTuSach !== 'undefined' && isTuSach) { %>
+                <div class="mb-5">
+                    <h4 class="mb-4 text-muted"><i class="bi bi-clock-history me-2"></i>Vừa xem gần đây</h4>
+                    <div class="row g-4">
+                        <% if (typeof lichSu !== 'undefined' && lichSu.length > 0) { %>
+                            <% lichSu.forEach(item => { %>
+                                <% if (item.BaiVan_id) { %>
+                                    <div class="col-md-4">
+                                        <div class="essay-card" style="background-color: #fcfdfa; border: 1px solid rgba(67, 90, 36, 0.1);">
+                                            <div>
+                                                <span class="badge-category" style="font-size: 0.7rem;">Ngày xem: <%= new Date(item.NgayXem).toLocaleDateString('vi-VN') %></span>
+                                                <h3 class="essay-title" style="font-size: 1.1rem;"><%= item.BaiVan_id.TieuDe %></h3>
+                                            </div>
+                                            <div class="mt-auto pt-2 text-end">
+                                                <a href="/bai-van/<%= item.BaiVan_id._id %>" class="btn-read" style="font-size: 0.9rem;">Đọc tiếp <i class="bi bi-arrow-right"></i></a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <% } %>
+                            <% }) %>
+                        <% } else { %>
+                            <div class="col-12 text-center text-muted py-3">Bạn chưa xem tác phẩm nào gần đây.</div>
+                        <% } %>
                     </div>
                 </div>
-            </div>
-        <% }) %>
-    <% } else { %>
-        <div class="col-12 text-center text-muted py-5">
-            <i class="bi bi-inbox fs-1"></i>
-            <p class="mt-2">Chưa có tác phẩm nào được xuất bản. Hãy là người đầu tiên gửi bài!</p>
-        </div>
-    <% } %>
-</div>
+                <hr class="mb-5 opacity-10">
+                <h4 class="mb-4 text-muted"><i class="bi bi-heart-fill text-danger me-2"></i>Danh sách yêu thích</h4>
+            <% } %>
 
+            <div class="row g-4">
+                <% if (typeof danhSachBai !== 'undefined' && danhSachBai.length > 0) { %>
+                    <% danhSachBai.forEach(bai => { %>
+                        <div class="col-md-4">
+                            <div class="essay-card">
+                                <div>
+                                    <span class="badge-category"><i class="bi bi-journal-bookmark me-1"></i> Trạm Văn</span>
+                                    <h3 class="essay-title"><%= bai.TieuDe %></h3>
+                                    <p class="essay-excerpt"><%= bai.TomTat %></p>
+                                </div>
+                                <div class="essay-footer">
+                                    <span class="author-info"><i class="bi bi-person-circle text-muted me-1"></i> <%= bai.TacGia_id ? bai.TacGia_id.HoTen : 'Vô danh' %></span>
+                                    <a href="/bai-van/<%= bai._id %>" class="btn-read">Đọc tiếp <i class="bi bi-arrow-right"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    <% }) %>
+                <% } else { %>
+                    <div class="col-12 text-center text-muted py-5">
+                        <i class="bi bi-inbox fs-1"></i>
+                        <p class="mt-2">Chưa có tác phẩm nào để hiển thị.</p>
+                    </div>
+                <% } %>
+            </div>
         </div>
     </main>
 
@@ -239,19 +195,11 @@
     <script>
         let lastScrollTop = 0;
         const topBar = document.querySelector('header.top-bar');
-
         window.addEventListener('scroll', function() {
             let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-            
-            if (scrollTop > lastScrollTop && scrollTop > 100) {
-                // Đang cuộn xuống -> Ẩn thanh top-bar
-                topBar.classList.add('top-bar-hidden');
-            } else {
-                // Đang cuộn lên -> Hiện thanh top-bar
-                topBar.classList.remove('top-bar-hidden');
-            }
-            
-            lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; // Lưu lại vị trí hiện tại cho lần so sánh sau
+            if (scrollTop > lastScrollTop && scrollTop > 100) { topBar.classList.add('top-bar-hidden'); } 
+            else { topBar.classList.remove('top-bar-hidden'); }
+            lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
         }, false);
     </script>
 </body>

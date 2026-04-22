@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        <%= bai.TieuDe %> - Trạm Văn
+    </title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Judson:wght@400;700&family=Inter:wght@400;500;600&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --primary-color: #435a24;
+            --bg-color: #eef7e8;
+            --accent-color: #627D47;
+            --white: #ffffff;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: #333;
+        }
+
+        .detail-card {
+            background: var(--white);
+            border-radius: 20px;
+            border: none;
+            box-shadow: 0 10px 40px rgba(67, 90, 36, 0.05);
+        }
+
+        .essay-title {
+            font-family: 'Judson', serif;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .iframe-container {
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #e0e0e0;
+            background: #fff;
+            box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.02);
+        }
+
+        /* Style cho nút Back to Top */
+        #btnBackToTop {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            display: none;
+            z-index: 1000;
+            background-color: var(--primary-color);
+            border: none;
+            transition: 0.3s;
+        }
+
+        #btnBackToTop:hover {
+            transform: translateY(-5px);
+            background-color: var(--accent-color);
+        }
+
+        .comment-avatar {
+            width: 45px;
+            height: 45px;
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container mt-5 mb-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="detail-card card">
+                    <div class="card-body p-4 p-md-5">
+
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <h1 class="essay-title display-5 mb-0">
+                                <%= bai.TieuDe %>
+                            </h1>
+
+                            <% if (typeof user !=='undefined' && user) { %>
+                                <button id="btnYeuThich"
+                                    class="btn <%= isYeuThich ? 'btn-danger' : 'btn-outline-danger' %> rounded-pill px-4 shadow-sm fw-600"
+                                    data-id="<%= bai._id %>">
+                                    <i class="bi <%= isYeuThich ? 'bi-heart-fill' : 'bi-heart' %>"></i>
+                                    <%= isYeuThich ? 'Đã lưu vào Tủ sách' : 'Lưu vào Tủ sách' %>
+                                </button>
+                            <% } %>
+                        </div>
+
+                        <div class="mb-4">
+                            <span class="badge px-3 py-2 rounded-pill"
+                                style="background-color: var(--bg-color); color: var(--primary-color); font-weight: 600;">
+                                <i class="bi bi-tag-fill me-1"></i>
+                                <%= bai.TheLoai_id ? bai.TheLoai_id.TenTheLoai : 'Chưa phân loại' %>
+                            </span>
+                        </div>
+
+                        <hr class="opacity-10 mb-4">
+
+                        <p class="lead text-muted fst-italic mb-5"
+                            style="border-left: 4px solid var(--sidebar-bg); padding-left: 20px;">
+                            "<%= bai.TomTat %>"
+                        </p>
+
+                        <div class="iframe-container mb-5" style="height: 850px;">
+                            <iframe src="https://drive.google.com/file/d/<%= bai.DriveFileId %>/preview" width="100%"
+                                height="100%" allow="autoplay" frameborder="0">
+                            </iframe>
+                        </div>
+
+                        <hr class="my-5" style="border-top: 2px dashed #ccd6be;">
+                        
+                        <div class="comment-section">
+                            <h4 class="essay-title mb-4"><i class="bi bi-chat-left-dots me-2"></i>Bình luận tác phẩm</h4>
+
+                            <% if (typeof user !=='undefined' && user) { %>
+                                <div class="d-flex gap-3 mb-5">
+                                    <div class="comment-avatar rounded-circle shadow-sm">
+                                        <%= user.HoTen.charAt(0).toUpperCase() %>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <textarea class="form-control border-0 bg-light p-3" id="noiDungBinhLuan"
+                                            rows="3" placeholder="Để lại cảm nhận của bạn về bài văn này..."
+                                            style="border-radius: 15px;"></textarea>
+                                        <div class="text-end mt-2">
+                                            <button class="btn btn-dark px-4 rounded-pill fw-500" id="btnGuiBinhLuan"
+                                                style="background-color: var(--primary-color); border: none;">
+                                                Gửi cảm nhận
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            <% } else { %>
+                                <div class="alert text-center py-4 rounded-4"
+                                    style="background-color: #f8f9fa; border: 1px dashed #ddd;">
+                                    <i class="bi bi-lock fs-3 text-muted d-block mb-2"></i>
+                                    Bạn cần <a href="/dang-nhap" class="fw-bold text-decoration-none"
+                                        style="color: var(--primary-color);">đăng nhập</a> để tham gia thảo luận.
+                                </div>
+                            <% } %>
+
+                            <div id="danhSachBinhLuan" class="py-3">
+                                <div class="text-center text-muted small py-4">
+                                    <i class="bi bi-chat-square-dots mb-2 fs-2 d-block opacity-25"></i>
+                                    Chưa có bình luận nào. Hãy là người đầu tiên chia sẻ cảm nghĩ!
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-5 pt-4 border-top text-center">
+                            <a href="/" class="btn btn-link text-decoration-none text-muted fw-500">
+                                <i class="bi bi-arrow-left me-2"></i> Quay lại trang chủ
+                            </a>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button id="btnBackToTop" class="btn text-white rounded-circle shadow-lg" title="Lên đầu trang">
+        <i class="bi bi-arrow-up fs-4"></i>
+    </button>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 1. Xử lý Nút Back to Top
+        const btnBackToTop = document.getElementById('btnBackToTop');
+        window.onscroll = function () {
+            if (document.body.scrollTop > 400 || document.documentElement.scrollTop > 400) {
+                btnBackToTop.style.display = "block";
+            } else {
+                btnBackToTop.style.display = "none";
+            }
+        };
+        btnBackToTop.onclick = function () {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+
+        // 2. Xử lý hiệu ứng Nút Yêu thích
+        const btnYeuThich = document.getElementById('btnYeuThich');
+        if (btnYeuThich) {
+            btnYeuThich.onclick = async function () {
+                const baiId = this.getAttribute('data-id');
+                this.disabled = true;
+
+                try {
+                    const response = await fetch('/api/yeu-thich', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ BaiVan_id: baiId })
+                    });
+                    const data = await response.json();
+
+                    if (data.success) {
+                        if (data.isYeuThich) {
+                            this.className = 'btn btn-danger rounded-pill px-4 shadow-sm fw-600';
+                            this.innerHTML = '<i class="bi bi-heart-fill"></i> Đã lưu vào Tủ sách';
+                        } else {
+                            this.className = 'btn btn-outline-danger rounded-pill px-4 shadow-sm fw-600';
+                            this.innerHTML = '<i class="bi bi-heart"></i> Lưu vào Tủ sách';
+                        }
+                    } else {
+                        alert(data.msg);
+                    }
+                } catch (error) {
+                    console.error("Lỗi:", error);
+                } finally {
+                    this.disabled = false;
+                }
+            };
+        }
+    </script>
+</body>
+
+</html>

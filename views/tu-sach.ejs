@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title><%= titlePage %> - Trạm Văn</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Judson:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary-color: #435a24; --bg-color: #eef7e8; --accent-color: #627D47; --white: #ffffff; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: #333; }
+        .hero-title { font-family: 'Judson', serif; font-weight: 700; color: var(--primary-color); font-size: 2.5rem; }
+        .essay-card { background: var(--white); border-radius: 16px; padding: 1.5rem; border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.03); transition: 0.3s ease; height: 100%; display: flex; flex-direction: column; }
+        .essay-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(67, 90, 36, 0.1); }
+        .essay-title { font-family: 'Judson', serif; font-weight: 700; font-size: 1.4rem; color: #222; margin-bottom: 0.8rem; line-height: 1.4; }
+        .nav-pills .nav-link { color: #666; font-weight: 600; border-radius: 50px; padding: 10px 25px; margin-right: 10px; }
+        .nav-pills .nav-link.active { background-color: var(--primary-color); color: white; }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="d-flex justify-content-between align-items-center border-bottom pb-4 mb-4">
+            <div>
+                <h1 class="hero-title"><i class="bi bi-bookmark-star me-2"></i><%= titlePage %></h1>
+                <p class="text-muted mb-0">Khám phá kho tàng tri thức và quản lý tủ sách cá nhân của bạn.</p>
+            </div>
+            <a href="/" class="btn btn-outline-secondary rounded-pill"><i class="bi bi-house me-1"></i> Trang chủ</a>
+        </div>
+
+        <ul class="nav nav-pills mb-4" id="pills-tab" role="tablist">
+            <li class="nav-item">
+                <button class="nav-link <%= titlePage === 'Thư Viện Tài Liệu' ? 'active' : '' %>" data-bs-toggle="pill" data-bs-target="#tab-thuvien" type="button">
+                    <i class="bi bi-grid-1x2 me-1"></i> Thư viện tổng hợp
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link <%= titlePage === 'Tủ Sách Của Tôi' ? 'active' : '' %>" data-bs-toggle="pill" data-bs-target="#tab-yeuthich" type="button">
+                    <i class="bi bi-heart-fill text-danger me-1"></i> Bài đã lưu
+                </button>
+            </li>
+            <li class="nav-item">
+                <button class="nav-link" data-bs-toggle="pill" data-bs-target="#tab-lichsu" type="button">
+                    <i class="bi bi-clock-history me-1"></i> Lịch sử xem
+                </button>
+            </li>
+        </ul>
+
+        <div class="tab-content" id="pills-tabContent">
+            <div class="tab-pane fade <%= titlePage === 'Thư Viện Tài Liệu' ? 'show active' : '' %>" id="tab-thuvien">
+                <div class="row g-4">
+                    <% if (typeof tatCaBaiVan !== 'undefined' && tatCaBaiVan.length > 0) { %>
+                        <% tatCaBaiVan.forEach(bai => { %>
+                            <div class="col-md-4">
+                                <div class="essay-card">
+                                    <h3 class="essay-title"><%= bai.TieuDe %></h3>
+                                    <p class="text-muted small mb-3 flex-grow-1"><%= bai.TomTat %></p>
+                                    <div class="d-flex justify-content-between border-top pt-3">
+                                        <span class="small fw-bold text-muted"><%= bai.TacGia_id ? bai.TacGia_id.HoTen : 'Vô danh' %></span>
+                                        <a href="/bai-van/<%= bai._id %>" class="text-decoration-none fw-bold" style="color: var(--primary-color);">Xem chi tiết <i class="bi bi-arrow-right"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                        <% }) %>
+                    <% } %>
+                </div>
+            </div>
+
+            <div class="tab-pane fade <%= titlePage === 'Tủ Sách Của Tôi' ? 'show active' : '' %>" id="tab-yeuthich">
+                <div class="row g-4">
+                    <% if (danhSachYeuThich.length > 0) { %>
+                        <% danhSachYeuThich.forEach(bai => { %>
+                            <div class="col-md-4">
+                                <div class="essay-card">
+                                    <h3 class="essay-title"><%= bai.TieuDe %></h3>
+                                    <p class="text-muted small mb-3 flex-grow-1"><%= bai.TomTat %></p>
+                                    <div class="d-flex justify-content-between border-top pt-3">
+                                        <span class="small fw-bold text-muted"><%= bai.TacGia_id ? bai.TacGia_id.HoTen : 'Vô danh' %></span>
+                                        <a href="/bai-van/<%= bai._id %>" class="text-decoration-none fw-bold" style="color: var(--primary-color);">Đọc lại <i class="bi bi-arrow-right"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                        <% }) %>
+                    <% } else { %>
+                        <div class="col-12 text-center text-muted py-5"><p>Bạn chưa lưu bài văn nào.</p></div>
+                    <% } %>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="tab-lichsu">
+                <div class="row g-4">
+                    <% if (danhSachLichSu.length > 0) { %>
+                        <% danhSachLichSu.forEach(bai => { %>
+                            <div class="col-md-4">
+                                <div class="essay-card" style="background-color: #fcfdfa;">
+                                    <h3 class="essay-title"><%= bai.TieuDe %></h3>
+                                    <p class="text-muted small mb-3 flex-grow-1"><%= bai.TomTat %></p>
+                                    <div class="d-flex justify-content-between border-top pt-3">
+                                        <span class="small fw-bold text-muted"><%= bai.TacGia_id ? bai.TacGia_id.HoTen : 'Vô danh' %></span>
+                                        <a href="/bai-van/<%= bai._id %>" class="text-decoration-none fw-bold text-secondary">Đọc tiếp <i class="bi bi-arrow-right"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                        <% }) %>
+                    <% } else { %>
+                        <div class="col-12 text-center text-muted py-5"><p>Bạn chưa xem tác phẩm nào gần đây.</p></div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

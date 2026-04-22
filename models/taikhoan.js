@@ -9,6 +9,17 @@ const userSchema = new mongoose.Schema({
     DanhSachLuu: [{ 
         type: mongoose.Schema.Types.ObjectId, 
         ref: 'baivan' 
+    }],
+
+    LichSu: [{
+        BaiVan_id: { 
+            type: mongoose.Schema.Types.ObjectId, 
+            ref: 'baivan' 
+        },
+        NgayXem: { 
+            type: Date, 
+            default: Date.now 
+        }
     }]
 });
 module.exports = mongoose.model('taikhoan', userSchema);
