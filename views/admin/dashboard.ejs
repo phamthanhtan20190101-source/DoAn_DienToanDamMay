@@ -28,6 +28,32 @@
         .stat-card p { font-size: 28px; font-weight: bold; margin: 10px 0 0 0; }
         
         .chart-box { margin-top: 35px; background: var(--white); padding: 25px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.03); }
+        
+        /* --- HIỆU ỨNG TRƯỢT MƯỢT MÀ --- */
+    .sidebar, .main-content, header.top-bar, .page-container {
+        transition: all 0.3s ease-in-out !important;
+    }
+
+    /* --- TRẠNG THÁI KHI SIDEBAR BỊ ẨN --- */
+    body.sidebar-hidden .sidebar {
+        transform: translateX(-280px); 
+    }
+
+    /* 1. Ép Main Content tràn đầy 100% màn hình để lấp khoảng trống bên phải */
+    body.sidebar-hidden .main-content {
+        margin-left: 0 !important;
+        width: 100% !important; 
+    }
+
+    /* 2. Ép Top-bar tràn đầy 100% màn hình */
+    body.sidebar-hidden header.top-bar {
+        width: 100% !important; 
+    }
+
+    /* 3. Đảm bảo khung bài viết bên trong luôn tự động canh giữa */
+    .page-container {
+        margin: 0 auto !important; 
+    }
     </style>
 </head>
 <body>
@@ -69,6 +95,9 @@
 </div>
 
     <div class="main-content">
+        <button id="sidebarToggle" class="toggle-btn">
+            <i class="bi bi-list"></i> Menu
+        </button>
         <h2 class="mb-4" style="color: var(--primary-color); font-weight: 700;">Bảng điều khiển hệ thống</h2>
         
         <div class="d-flex gap-3 mb-4">
@@ -106,6 +135,32 @@
                     backgroundColor: '#435a24',
                     borderRadius: 8
                 }]
+            }
+        });
+    </script>
+    <!-- Script để toggle sidebar -->
+     <script>
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const body = document.body;
+
+        // 1. Kiểm tra xem trước đó user có đang ẩn sidebar không
+        if (localStorage.getItem('sidebar-state') === 'hidden') {
+            body.classList.add('sidebar-hidden');
+        }
+
+        // 2. Xử lý khi bấm nút
+        sidebarToggle.addEventListener('click', () => {
+            // ĐÃ SỬA: Đổi 'sidebar-collapsed' thành 'sidebar-hidden' để khớp với CSS
+            body.classList.toggle('sidebar-hidden');
+            
+            // 3. Đổi icon và lưu trạng thái vào bộ nhớ
+            const icon = sidebarToggle.querySelector('i');
+            if (body.classList.contains('sidebar-hidden')) {
+                icon.className = 'bi bi-layout-sidebar-inset';
+                localStorage.setItem('sidebar-state', 'hidden'); // Lưu lại là đang ẩn
+            } else {
+                icon.className = 'bi bi-list';
+                localStorage.setItem('sidebar-state', 'visible'); // Lưu lại là đang hiện
             }
         });
     </script>

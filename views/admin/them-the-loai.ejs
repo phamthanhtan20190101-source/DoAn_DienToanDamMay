@@ -13,6 +13,34 @@
         .sidebar a:hover, .sidebar a.active { background: rgba(255,255,255,0.4); border-left: 4px solid var(--primary-color); }
         .main-content { margin-left: 280px; padding: 40px; width: calc(100% - 280px); }
         .upload-card { background: var(--white); border-radius: 20px; padding: 2.5rem; box-shadow: 0 10px 40px rgba(67, 90, 36, 0.05); margin-bottom: 30px; }
+        /* --- HIỆU ỨNG ẨN/HIỆN SIDEBAR --- */
+        .sidebar, .main-content {
+            transition: all 0.3s ease-in-out !important;
+        }
+
+        body.sidebar-hidden .sidebar {
+            transform: translateX(-280px); /* Đẩy sidebar ra ngoài */
+        }
+
+        body.sidebar-hidden .main-content {
+            margin-left: 0 !important;
+            width: 100% !important; 
+        }
+
+        /* Nút Toggle */
+        .toggle-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            transition: 0.3s;
+            font-weight: bold;
+        }
+        .toggle-btn:hover { background: var(--accent-color, #627D47); }
+    
     </style>
 </head>
 <body>
@@ -53,6 +81,9 @@
 </div>
 
     <div class="main-content">
+        <button id="sidebarToggle" class="toggle-btn">
+            <i class="bi bi-list"></i> Menu
+        </button>
         <div class="upload-card">
             <h3 style="color: var(--primary-color); font-weight: 700;">Thêm chuyên mục mới</h3>
             <% if (error) { %><div class="alert alert-danger"><%= error %></div><% } %>
@@ -87,5 +118,32 @@
             </table>
         </div>
     </div>
+    <!-- --- HIỆU ỨNG ẨN/HIỆN SIDEBAR --- -->
+     <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const body = document.body;
+
+            // Kiểm tra trạng thái đã lưu
+            if (localStorage.getItem('sidebar-state') === 'hidden') {
+                body.classList.add('sidebar-hidden');
+                sidebarToggle.querySelector('i').className = 'bi bi-layout-sidebar-inset';
+            }
+
+            // Xử lý khi bấm nút
+            sidebarToggle.addEventListener('click', () => {
+                body.classList.toggle('sidebar-hidden');
+                
+                const icon = sidebarToggle.querySelector('i');
+                if (body.classList.contains('sidebar-hidden')) {
+                    icon.className = 'bi bi-layout-sidebar-inset';
+                    localStorage.setItem('sidebar-state', 'hidden');
+                } else {
+                    icon.className = 'bi bi-list';
+                    localStorage.setItem('sidebar-state', 'visible');
+                }
+            });
+        });
+    </script>
 </body>
 </html>

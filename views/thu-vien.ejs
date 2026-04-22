@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= titlePage %> - Trạm Văn</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css2?family=Judson:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary-color: #435a24; --bg-color: #eef7e8;      
+            --sidebar-bg: #a8d08d; --accent-color: #627D47; --white: #ffffff;
+        }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: #333; margin: 0; display: flex; min-height: 100vh; }
+        
+        /* --- SIDEBAR LAYOUT --- */
+        .sidebar { width: 280px; background-color: var(--sidebar-bg); position: fixed; height: 100vh; z-index: 1000; transition: all 0.3s ease; display: flex; flex-direction: column; }
+        .main-content { flex-grow: 1; margin-left: 280px; width: calc(100% - 280px); transition: all 0.3s ease; min-width: 0; }
+        
+        body.sidebar-hidden .sidebar { transform: translateX(-280px); }
+        body.sidebar-hidden .main-content { margin-left: 0 !important; width: 100% !important; }
+
+        /* --- ĐỊNH DẠNG CHI TIẾT BÊN TRONG SIDEBAR (FIX LỖI CHỮ XANH) --- */
+        .sidebar-brand { padding: 2rem 1.5rem; display: flex; align-items: center; gap: 12px; text-decoration: none; border-bottom: 1px solid rgba(67, 90, 36, 0.15); }
+        .brand-name { font-family: 'Judson', serif; font-size: 1.8rem; font-weight: 700; color: var(--primary-color); }
+        .sidebar-menu { padding: 1.5rem 0; flex-grow: 1; overflow-y: auto; }
+        .menu-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; padding: 0 1.5rem 0.75rem; color: rgba(67, 90, 36, 0.6); display: block; font-weight: 600; }
+        .sidebar a { padding: 0.85rem 1.5rem; color: var(--primary-color); text-decoration: none !important; display: flex; align-items: center; gap: 12px; font-weight: 500; transition: 0.2s; }
+        .sidebar a:hover, .sidebar a.active { background-color: rgba(255, 255, 255, 0.4); border-left: 4px solid var(--primary-color); font-weight: 600; }
+        .sidebar i { font-size: 1.2rem; }
+
+        /* --- TOP BAR --- */
+        header.top-bar { 
+            background: var(--white); padding: 0 2rem; display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.03); position: fixed; top: 0; right: 0; width: calc(100% - 280px); z-index: 900;
+            transition: all 0.3s ease; height: 70px;
+        }
+        body.sidebar-hidden header.top-bar { width: 100% !important; }
+
+        /* --- THƯ VIỆN CONTENT --- */
+        .page-container { padding: 2rem 3rem; padding-top: 100px; max-width: 1300px; margin: 0 auto; }
+        .hero-title { font-family: 'Judson', serif; font-weight: 700; color: var(--primary-color); font-size: 2.5rem; margin-bottom: 2rem; }
+
+        .category-nav { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 15px; margin-bottom: 30px; border-bottom: 1px solid rgba(67, 90, 36, 0.1); scrollbar-width: none; }
+        .category-nav::-webkit-scrollbar { display: none; }
+        .category-item { padding: 8px 20px; border-radius: 50px; background: var(--white); color: var(--primary-color); text-decoration: none; font-weight: 600; font-size: 0.9rem; border: 1px solid var(--primary-color); transition: 0.3s; white-space: nowrap; }
+        .category-item:hover, .category-item.active { background: var(--primary-color); color: var(--white); }
+
+        /* GRID CHIA CỘT CHUẨN */
+        .library-grid { 
+            display: grid; 
+            grid-template-columns: minmax(0, 8.5fr) minmax(0, 3.5fr); 
+            gap: 40px; 
+            align-items: start;
+        }
+
+        .essay-card-horizontal { background: var(--white); border-radius: 16px; padding: 1.5rem; margin-bottom: 20px; display: flex; flex-direction: column; transition: 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: none; }
+        .essay-card-horizontal:hover { transform: translateX(10px); box-shadow: 0 10px 25px rgba(67, 90, 36, 0.1); }
+        .essay-title { font-family: 'Judson', serif; font-weight: 700; font-size: 1.4rem; color: #222; text-decoration: none; margin-bottom: 0.5rem; }
+        .essay-excerpt { color: #666; font-size: 0.95rem; line-height: 1.6; margin-bottom: 1rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+
+        .sidebar-top-views { position: sticky; top: 100px; background: var(--white); padding: 25px; border-radius: 20px; box-shadow: 0 5px 20px rgba(0,0,0,0.02); height: fit-content; }
+        .top-view-item { display: flex; gap: 15px; align-items: flex-start; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #f5f5f5; }
+        .top-number { font-family: 'Judson', serif; font-size: 1.8rem; font-weight: 700; color: #cbdcc0; line-height: 1; min-width: 30px; }
+        .top-title { font-size: 0.95rem; font-weight: 600; color: #333; text-decoration: none; transition: 0.2s; }
+        
+        .toggle-btn { background: var(--primary-color); color: white; border: none; padding: 8px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; display: flex; align-items: center; gap: 8px; }
+        .icon-btn-dark { width: 40px; height: 40px; border-radius: 50%; background: #2c2f33; color: white; display: flex; align-items: center; justify-content: center; text-decoration: none; }
+
+        @media (max-width: 1100px) { .library-grid { grid-template-columns: 1fr; } .sidebar-top-views { position: static; margin-top: 2rem; } }
+        /* --- STYLE PHÂN TRANG TAO ĐÀN --- */
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 40px;
+            gap: 10px;
+            color: #8b7355; /* Màu nâu giống ảnh */
+            font-weight: 500;
+        }
+
+        .pagination-link {
+            text-decoration: none;
+            color: #666;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.3s;
+        }
+
+        .pagination-link.active {
+            background-color: #8b7355; /* Màu nâu chủ đạo */
+            color: white !important;
+        }
+
+        .pagination-link:hover:not(.active) {
+            background-color: #e0eadd;
+        }
+
+        .page-info {
+            margin-left: auto;
+            color: #999;
+            font-size: 0.9rem;
+        }
+    
+    </style>
+</head>
+<body>
+
+    <aside class="sidebar">
+        <a href="/" class="sidebar-brand">
+            <i class="bi bi-feather fs-2"></i>
+            <span class="brand-name">Trạm Văn</span>
+        </a>
+        
+        <div class="sidebar-menu">
+            <span class="menu-label">Cộng đồng</span>
+            <a href="/danh-sach" class="active"><i class="bi bi-grid-1x2"></i> Thư Viện Tài Liệu</a>
+            <a href="/"><i class="bi bi-stars"></i> Tác Phẩm Nổi Bật</a>
+            <a href="#"><i class="bi bi-chat-heart"></i> Góc Cảm Nhận</a>
+
+            <span class="menu-label mt-4">Cá nhân</span>
+            <% if (typeof user !== 'undefined' && user) { %>
+                <a href="/gui-bai"><i class="bi bi-cloud-arrow-up"></i> Gửi Bài Viết</a>
+                <a href="/bai-da-dang"><i class="bi bi-journal-text"></i> Bài Đã Đăng</a>
+                <a href="/tu-sach"><i class="bi bi-bookmark-star"></i> Tủ Sách Trạm Văn</a>
+                <a href="/hom-thu"><i class="bi bi-envelope"></i> Hòm Thư Tâm Sự</a>
+            <% } else { %>
+                <a href="/dang-nhap"><i class="bi bi-cloud-arrow-up"></i> Gửi Bài Viết</a>
+                <a href="/dang-nhap"><i class="bi bi-journal-text"></i> Bài Đã Đăng</a>
+                <a href="/dang-nhap"><i class="bi bi-bookmark-star"></i> Tủ Sách Trạm Văn</a>
+                <a href="/dang-nhap"><i class="bi bi-envelope"></i> Hòm Thư Tâm Sự</a>
+            <% } %>
+        </div>
+
+        <% if (typeof user !== 'undefined' && user && user.QuyenHan === 'admin') { %>
+            <div class="p-3 border-top" style="border-color: rgba(67, 90, 36, 0.1) !important;">
+                <a href="/admin/dashboard" class="btn w-100 py-2 text-white fw-bold" style="background: var(--primary-color); border-radius: 10px;">
+                    <i class="bi bi-shield-lock me-2"></i> Admin Panel
+                </a>
+            </div>
+        <% } %>
+    </aside>
+
+    <main class="main-content">
+        <header class="top-bar">
+            <button id="sidebarToggle" class="toggle-btn">
+                <i class="bi bi-list"></i> Menu
+            </button>
+            
+            <div class="user-info">
+                <% if (typeof user !== 'undefined' && user) { %>
+                    <div class="d-flex align-items-center gap-3">
+                        <a href="#" class="icon-btn-dark"><i class="bi bi-gear-fill"></i></a>
+                        <div class="dropdown">
+                            <button class="icon-btn-dark border-0" type="button" data-bs-toggle="dropdown">
+                                <i class="bi bi-person-fill"></i>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-3 rounded-3" style="min-width: 200px;">
+                                <li class="px-3 py-2 text-muted small">Chào, <strong><%= user.HoTen %></strong></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li><a class="dropdown-item py-2" href="#"><i class="bi bi-person me-2"></i> Hồ sơ</a></li>
+                                <li><a class="dropdown-item py-2 text-danger" href="/dang-xuat"><i class="bi bi-box-arrow-right me-2"></i> Đăng xuất</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                <% } else { %>
+                    <div class="d-flex gap-2">
+                        <a href="/dang-ky" class="btn btn-sm btn-outline-secondary rounded-pill px-3">Đăng ký</a>
+                        <a href="/dang-nhap" class="btn btn-sm btn-success rounded-pill px-3" style="background: var(--primary-color)">Đăng nhập</a>
+                    </div>
+                <% } %>
+            </div>
+        </header>
+
+        <div class="page-container">
+            <h1 class="hero-title"><i class="bi bi-collection-play me-3"></i>Thư Viện Tài Liệu</h1>
+
+            <div class="category-nav">
+                <a href="/danh-sach" class="category-item <%= !currentCate ? 'active' : '' %>">Tất cả bài viết</a>
+                <% if (typeof danhSachTheLoai !== 'undefined') { %>
+                    <% danhSachTheLoai.forEach(tl => { %>
+                        <a href="/danh-sach?theloai=<%= tl._id %>" class="category-item <%= (typeof currentCate !== 'undefined' && currentCate == tl._id) ? 'active' : '' %>">
+                            <%= tl.TenTheLoai %>
+                        </a>
+                    <% }) %>
+                <% } %>
+            </div>
+
+            <div class="library-grid">
+                <div class="main-list">
+    <% if (typeof danhSachBai !== 'undefined' && danhSachBai.length > 0) { %>
+        <% danhSachBai.forEach(bai => { %>
+            <div class="essay-card-horizontal">
+                <span style="font-size: 0.7rem; color: var(--primary-color); font-weight: 700; text-transform: uppercase; margin-bottom: 5px;">
+                    <%= bai.TheLoai_id ? bai.TheLoai_id.TenTheLoai : 'Văn học' %>
+                </span>
+                <a href="/bai-van/<%= bai._id %>" class="essay-title"><%= bai.TieuDe %></a>
+                <p class="essay-excerpt"><%= bai.TomTat %></p>
+                <div class="d-flex justify-content-between align-items-center mt-2">
+                    <span class="text-muted small"><i class="bi bi-person me-1"></i> <%= bai.TacGia_id ? bai.TacGia_id.HoTen : 'Vô danh' %></span>
+                    <span class="text-muted small"><i class="bi bi-calendar3 me-1"></i> <%= new Date(bai.NgayDang).toLocaleDateString('vi-VN') %></span>
+                </div>
+            </div>
+        <% }) %>
+    <% } else { %>
+        <div class="text-center py-5 text-muted bg-white rounded-4">Chưa có bài viết nào trong mục này.</div>
+    <% } %>
+
+    <% if (totalPages > 1) { %>
+        <div class="pagination-container">
+            <% if (currentPage > 1) { %>
+                <a href="?page=<%= currentPage - 1 %><%= currentCate ? '&theloai=' + currentCate : '' %>" class="pagination-link">
+                    <i class="bi bi-chevron-left"></i>
+                </a>
+            <% } %>
+
+            <% for(let i = 1; i <= totalPages; i++) { %>
+                <% if (i == 1 || i == totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) { %>
+                    <a href="?page=<%= i %><%= currentCate ? '&theloai=' + currentCate : '' %>" 
+                       class="pagination-link <%= i == currentPage ? 'active' : '' %>">
+                        <%= i %>
+                    </a>
+                <% } else if (i == currentPage - 2 || i == currentPage + 2) { %>
+                    <span class="px-1">...</span>
+                <% } %>
+            <% } %>
+
+            <% if (currentPage < totalPages) { %>
+                <a href="?page=<%= currentPage + 1 %><%= currentCate ? '&theloai=' + currentCate : '' %>" class="pagination-link">
+                    <i class="bi bi-chevron-right"></i>
+                </a>
+            <% } %>
+
+            <div class="page-info">
+                Trang <%= currentPage %> của <%= totalPages %>
+            </div>
+        </div>
+    <% } %>
+</div>
+
+                <aside class="sidebar-top-views">
+                    <h6 class="fw-bold mb-4" style="color: var(--primary-color); border-left: 4px solid var(--primary-color); padding-left: 12px;">XEM NHIỀU NHẤT</h6>
+                    <div class="top-list">
+                        <% if (typeof topBaiViet !== 'undefined' && topBaiViet.length > 0) { %>
+                            <% topBaiViet.forEach((bai, index) => { %>
+                                <div class="top-view-item">
+                                    <span class="top-number"><%= (index + 1).toString().padStart(2, '0') %></span>
+                                    <div>
+                                        <a href="/bai-van/<%= bai._id %>" class="top-title"><%= bai.TieuDe %></a>
+                                        <div class="text-muted" style="font-size: 0.7rem;"><i class="bi bi-eye me-1"></i><%= bai.LuotXem %> lượt xem</div>
+                                    </div>
+                                </div>
+                            <% }) %>
+                        <% } else { %>
+                            <p class="text-muted small text-center">Đang cập nhật...</p>
+                        <% } %>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const body = document.body;
+
+        if (localStorage.getItem('sidebar-state') === 'hidden') {
+            body.classList.add('sidebar-hidden');
+            sidebarToggle.querySelector('i').className = 'bi bi-layout-sidebar-inset';
+        }
+
+        sidebarToggle.addEventListener('click', () => {
+            body.classList.toggle('sidebar-hidden');
+            const icon = sidebarToggle.querySelector('i');
+            if (body.classList.contains('sidebar-hidden')) {
+                icon.className = 'bi bi-layout-sidebar-inset';
+                localStorage.setItem('sidebar-state', 'hidden');
+            } else {
+                icon.className = 'bi bi-list';
+                localStorage.setItem('sidebar-state', 'visible');
+            }
+        });
+    </script>
+</body>
+</html>

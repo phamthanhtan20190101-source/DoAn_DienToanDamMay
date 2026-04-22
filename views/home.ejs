@@ -27,7 +27,14 @@
         .sidebar a { padding: 0.85rem 1.5rem; color: var(--primary-color); text-decoration: none; display: flex; align-items: center; gap: 12px; font-weight: 500; transition: 0.2s; }
         .sidebar a:hover, .sidebar a.active { background-color: rgba(255, 255, 255, 0.4); border-left: 4px solid var(--primary-color); font-weight: 600; }
         .main-content { flex-grow: 1; margin-left: 280px; width: calc(100% - 280px); }
-        header.top-bar { background: var(--white); padding: 1rem 2rem; display: flex; justify-content: flex-end; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.03); position: fixed; top: 0; right: 0; width: calc(100% - 280px); z-index: 900; transition: transform 0.3s ease-in-out; }
+        header.top-bar { 
+            background: var(--white); padding: 1rem 2rem; display: flex; 
+            justify-content: space-between; /* <-- Cực kỳ quan trọng */
+            align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.03); 
+            position: fixed; top: 0; right: 0; width: calc(100% - 280px); 
+            z-index: 900; 
+            transition: all 0.3s ease-in-out !important; /* Mượt mà cho tất cả */
+        }
         .top-bar-hidden { transform: translateY(-100%); }
         .icon-btn-dark { width: 42px; height: 42px; border-radius: 50%; background-color: var(--icon-bg-dark); color: #e3e5e8; display: flex; align-items: center; justify-content: center; text-decoration: none; border: none; transition: 0.2s; font-size: 1.2rem; cursor: pointer; }
         .icon-btn-dark:hover { background-color: var(--icon-bg-hover); color: #ffffff; }
@@ -44,6 +51,35 @@
         .author-info { font-size: 0.9rem; color: #555; font-weight: 500; }
         .btn-read { background: none; border: none; color: var(--primary-color); font-weight: 600; text-decoration: none; display: flex; align-items: center; gap: 5px; transition: 0.2s; }
         .btn-read:hover { color: var(--accent-color); gap: 8px; }
+    
+       /* --- HIỆU ỨNG ẨN/HIỆN SIDEBAR CHO HOME --- */
+        /* 2. HIỆU ỨNG ẨN/HIỆN SIDEBAR CHUẨN */
+        .sidebar, .main-content {
+            transition: all 0.3s ease-in-out !important;
+        }
+
+        body.sidebar-hidden .sidebar {
+            transform: translateX(-280px);
+        }
+
+        body.sidebar-hidden .main-content {
+            margin-left: 0 !important;
+            width: 100% !important; 
+        }
+
+        /* 3. THÊM DÒNG NÀY: Ép thanh Top-bar giãn dài ra 100% để lấp chỗ trống */
+        body.sidebar-hidden header.top-bar {
+            width: 100% !important;
+        }
+
+        /* 4. NÚT TOGGLE GỌN GÀNG HƠN */
+        .toggle-btn {
+            background: var(--primary-color); color: white; border: none;
+            padding: 8px 15px; border-radius: 8px; cursor: pointer;
+            transition: 0.3s; font-weight: bold; display: inline-flex;
+            align-items: center; gap: 5px; margin-bottom: 0; /* Bỏ margin dư thừa */
+        }
+        .toggle-btn:hover { background: var(--accent-color); }
     </style>
 </head>
 <body>
@@ -58,8 +94,9 @@
             <div>
                 <span class="menu-label">Cộng đồng</span>
                 <a href="/danh-sach" class="<%= (typeof titlePage !== 'undefined' && titlePage === 'Thư Viện Tài Liệu') ? 'active' : '' %>">
-                    <i class="bi bi-grid-1x2"></i> Thư Viện Tài Liệu
-                </a>
+    <i class="bi bi-grid-1x2"></i> Thư Viện Tài Liệu
+</a>
+                
                 
                 <a href="/" class="<%= (typeof titlePage === 'undefined' || titlePage === 'Tác Phẩm Nổi Bật') ? 'active' : '' %>">
                     <i class="bi bi-stars"></i> Tác Phẩm Nổi Bật
@@ -93,6 +130,9 @@
 
     <main class="main-content">
         <header class="top-bar">
+            <button id="sidebarToggle" class="toggle-btn">
+                <i class="bi bi-list"></i> Menu
+            </button>
             <% if (typeof user !== 'undefined' && user) { %>
                 <div class="d-flex align-items-center gap-3">
                     <a href="#" class="icon-btn-dark" title="Cài đặt"><i class="bi bi-gear-fill"></i></a>
@@ -201,6 +241,34 @@
             else { topBar.classList.remove('top-bar-hidden'); }
             lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
         }, false);
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const sidebarToggle = document.getElementById('sidebarToggle');
+            const body = document.body;
+
+            if (sidebarToggle) {
+                // Kiểm tra trạng thái đã lưu
+                if (localStorage.getItem('sidebar-state') === 'hidden') {
+                    body.classList.add('sidebar-hidden');
+                    sidebarToggle.querySelector('i').className = 'bi bi-layout-sidebar-inset';
+                }
+
+                // Xử lý khi bấm nút
+                sidebarToggle.addEventListener('click', () => {
+                    body.classList.toggle('sidebar-hidden');
+                    
+                    const icon = sidebarToggle.querySelector('i');
+                    if (body.classList.contains('sidebar-hidden')) {
+                        icon.className = 'bi bi-layout-sidebar-inset';
+                        localStorage.setItem('sidebar-state', 'hidden');
+                    } else {
+                        icon.className = 'bi bi-list';
+                        localStorage.setItem('sidebar-state', 'visible');
+                    }
+                });
+            }
+        });
     </script>
 </body>
 </html>

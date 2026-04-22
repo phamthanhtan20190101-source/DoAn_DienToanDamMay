@@ -45,28 +45,51 @@ router.get('/', async (req, res) => {
     }
 });
 
-// Trang Thư Viện Tài Liệu (Khắc phục lỗi Cannot GET /danh-sach)
+// Route hiển thị Thư viện (phong cách Tao Đàn)
 router.get('/danh-sach', async (req, res) => {
     try {
-        const danhSachBai = await BaiVan.find({ TrangThai: 'DaDuyet' })
+        const selectedCate = req.query.theloai;
+        const page = parseInt(req.query.page) || 1; // Trang hiện tại, mặc định là 1
+        const limit = 9; // Số lượng bài viết trên mỗi trang
+        const skip = (page - 1) * limit;
+
+        let query = { TrangThai: 'DaDuyet' };
+        if (selectedCate) query.TheLoai_id = selectedCate;
+
+        // 1. Lấy danh sách bài viết theo trang
+        const danhSachBai = await BaiVan.find(query)
             .populate('TacGia_id', 'HoTen')
             .populate('TheLoai_id', 'TenTheLoai')
-            .sort({ NgayDang: -1 });
-            
-        res.render('home', { 
-            danhSachBai, 
-            user: req.session.user, 
-            isTuSach: false,
-            titlePage: 'Thư Viện Tài Liệu' 
+            .sort({ NgayDang: -1 })
+            .skip(skip)
+            .limit(limit);
+
+        // 2. Tính toán tổng số trang
+        const totalPosts = await BaiVan.countDocuments(query);
+        const totalPages = Math.ceil(totalPosts / limit);
+
+        // 3. Lấy Top 10 và Thể loại (giữ nguyên như cũ)
+        const topBaiViet = await BaiVan.find({ TrangThai: 'DaDuyet' }).sort({ LuotXem: -1 }).limit(10);
+        const danhSachTheLoai = await TheLoai.find();
+
+        res.render('thu-vien', { 
+            titlePage: 'Thư Viện Tài Liệu',
+            danhSachBai,
+            topBaiViet,
+            danhSachTheLoai,
+            currentCate: selectedCate,
+            currentPage: page,
+            totalPages: totalPages,
+            user: req.session.user
         });
     } catch (err) {
-        res.status(500).send('Lỗi tải thư viện: ' + err.message);
+        res.status(500).send(err.message);
     }
 });
 
 // Trang Tủ Sách (Yêu thích và Lịch sử)
 // Cả Thư viện và Tủ sách đều dùng chung giao diện tu-sach.ejs
-router.get(['/danh-sach', '/tu-sach'], async (req, res) => {
+router.get('/tu-sach', async (req, res) =>  {
     if (!req.session.user) return res.redirect('/dang-nhap');
     
     try {
@@ -102,12 +125,17 @@ router.get(['/danh-sach', '/tu-sach'], async (req, res) => {
     }
 });
 
-// Trang chi tiết bài văn + Tự động lưu lịch sử
+// Trang chi tiết bài văn + Tự động tăng lượt xem & lưu lịch sử
 router.get('/bai-van/:id', async (req, res) => {
     try {
-        const bai = await BaiVan.findById(req.params.id)
-            .populate('TacGia_id', 'HoTen')
-            .populate('TheLoai_id', 'TenTheLoai');
+        // CẬP NHẬT TẠI ĐÂY: Sử dụng findByIdAndUpdate để cộng dồn LuotXem
+        const bai = await BaiVan.findByIdAndUpdate(
+            req.params.id, 
+            { $inc: { LuotXem: 1 } }, // Tăng LuotXem thêm 1
+            { new: true } // Trả về dữ liệu mới nhất sau khi cộng
+        )
+        .populate('TacGia_id', 'HoTen')
+        .populate('TheLoai_id', 'TenTheLoai');
         
         if (!bai) return res.status(404).send('Không tìm thấy bài văn');
 
@@ -115,14 +143,14 @@ router.get('/bai-van/:id', async (req, res) => {
         if (req.session.user) {
             const userId = req.session.user._id;
             
-            // 1. Cập nhật lịch sử xem (Dùng upsert để đẩy bài mới xem lên đầu)
+            // 1. Cập nhật lịch sử xem
             await LichSu.findOneAndUpdate(
                 { TaiKhoan_id: userId, BaiVan_id: bai._id },
                 { NgayXem: new Date() },
                 { upsert: true, new: true }
             );
 
-            // 2. Kiểm tra trạng thái yêu thích để hiển thị nút tim đỏ/trắng
+            // 2. Kiểm tra trạng thái yêu thích
             const checkYeuThich = await YeuThich.findOne({ TaiKhoan_id: userId, BaiVan_id: bai._id });
             if (checkYeuThich) isYeuThich = true;
         }
@@ -132,7 +160,6 @@ router.get('/bai-van/:id', async (req, res) => {
         res.status(500).send('Lỗi: ' + err.message);
     }
 });
-
 // API xử lý Yêu thích (Thả tim/Bỏ tim) - Dùng AJAX
 router.post('/api/yeu-thich', async (req, res) => {
     if (!req.session.user) return res.json({ success: false, msg: 'Vui lòng đăng nhập!' });
