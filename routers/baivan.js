@@ -15,7 +15,7 @@ const auth = new google.auth.GoogleAuth({
     scopes: ['https://www.googleapis.com/auth/drive'],
 });
 const drive = google.drive({ version: 'v3', auth });
-const FOLDER_ID = '1Jx5ami51Exkt8PvnDZfjdR2SeOytecuZ?usp=drive_link'; // <--- NHỚ ĐỔI ID theo drive!
+const FOLDER_ID = '1Jx5ami51Exkt8PvnDZfjdR2SeOytecuZ'; // <--- NHỚ ĐỔI ID theo drive!
 
 // ==========================================
 // PHẦN 1: GIAO DIỆN NGƯỜI DÙNG (USER)
@@ -34,9 +34,18 @@ router.get('/', async (req, res) => {
 });
 
 // Trang nộp bài viết
-router.get('/gui-bai', (req, res) => {
+router.get('/gui-bai', async (req, res) => {
     if (!req.session.user) return res.redirect('/dang-nhap');
-    res.render('index'); 
+    
+    try {
+        // Vào Database lấy toàn bộ danh sách Thể loại ra
+        const danhSachTheLoai = await TheLoai.find().sort({ _id: -1 });
+        
+        // Truyền danh sách đó ra ngoài giao diện index.ejs
+        res.render('index', { danhSachTheLoai }); 
+    } catch (err) {
+        res.status(500).send('Lỗi tải trang: ' + err.message);
+    }
 });
 
 // Các trang cá nhân (Sẽ thiết kế sau)

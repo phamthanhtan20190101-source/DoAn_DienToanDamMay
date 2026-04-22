@@ -343,9 +343,16 @@
                             <label for="TheLoai_id" class="form-label">Chuyên mục</label>
                             <select class="form-select form-select-lg" id="TheLoai_id" name="TheLoai_id" required>
                                 <option value="" selected disabled>-- Chọn --</option>
-                                <option value="ID_MAU_1">Nghị luận văn học</option>
-                                <option value="ID_MAU_2">Nghị luận xã hội</option>
-                                <option value="ID_MAU_3">Cảm nhận thơ ca</option>
+                        
+                                <% if (typeof danhSachTheLoai !=='undefined' && danhSachTheLoai.length> 0) { %>
+                                    <% danhSachTheLoai.forEach(tl=> { %>
+                                        <option value="<%= tl._id %>">
+                                            <%= tl.TenTheLoai %>
+                                        </option>
+                                        <% }) %>
+                                            <% } else { %>
+                                                <option value="" disabled>Chưa có chuyên mục nào</option>
+                                                <% } %>
                             </select>
                         </div>
                     </div>
