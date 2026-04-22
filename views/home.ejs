@@ -9,7 +9,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Judson:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     
     <style>
-        /* GIỮ NGUYÊN CSS CƠ BẢN CỦA PROJECT */
+        /* GIỮ NGUYÊN CSS CƠ BẢN CỦA PROJECT */  
+        /* --- MÀU SẮC CHÍNH CỦA TRẠM VĂN --- */
         :root {
             --primary-color: #435a24; 
             --bg-color: #eef7e8;      
@@ -28,7 +29,27 @@
         .sidebar a { padding: 0.85rem 1.5rem; color: var(--primary-color); text-decoration: none; display: flex; align-items: center; gap: 12px; font-weight: 500; transition: 0.2s; }
         .sidebar a:hover, .sidebar a.active { background-color: rgba(255, 255, 255, 0.4); border-left: 4px solid var(--primary-color); font-weight: 600; }
         .main-content { flex-grow: 1; margin-left: 280px; width: calc(100% - 280px); }
-        header.top-bar { background: var(--white); padding: 1rem 2rem; display: flex; justify-content: flex-end; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.03); position: sticky; top: 0; z-index: 900; }
+        header.top-bar { 
+            background: var(--white); 
+            padding: 1rem 2rem; 
+            display: flex; 
+            justify-content: flex-end; 
+            align-items: center; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.03); 
+            
+            /* --- THIẾT LẬP ĐỂ CÓ THỂ ẨN/HIỆN --- */
+            position: fixed; 
+            top: 0; 
+            right: 0;
+            width: calc(100% - 280px); 
+            z-index: 900; 
+            transition: transform 0.3s ease-in-out; /* Tạo hiệu ứng trượt mượt 0.3 giây */
+        }
+
+        /* Class này sẽ được JavaScript thêm vào khi cuộn xuống */
+        .top-bar-hidden {
+            transform: translateY(-100%); /* Đẩy thanh bar lên trên khuất màn hình */
+        }
         .icon-btn-dark { width: 42px; height: 42px; border-radius: 50%; background-color: var(--icon-bg-dark); color: #e3e5e8; display: flex; align-items: center; justify-content: center; text-decoration: none; border: none; transition: 0.2s; font-size: 1.2rem; cursor: pointer; }
         .icon-btn-dark:hover { background-color: var(--icon-bg-hover); color: #ffffff; }
         .dropdown-toggle-hide-arrow::after { display: none !important; }
@@ -36,9 +57,14 @@
         .btn-auth-outline:hover { background-color: #f8f9fa; color: #333; }
         .btn-auth-solid { background-color: var(--primary-color); color: var(--white); font-weight: 500; border: 1px solid var(--primary-color); text-decoration: none; }
         .btn-auth-solid:hover { background-color: var(--accent-color); color: var(--white); }
+        
+        .page-container { 
+            padding: 3rem; 
+            padding-top: 120px; /* Thêm dòng này để đẩy nội dung xuống khỏi Top-bar */
+            max-width: 1200px; 
+            margin: 0 auto; 
+        }
 
-        /* --- CSS DÀNH RIÊNG CHO TRANG CHỦ MỚI --- */
-        .page-container { padding: 3rem; max-width: 1200px; margin: 0 auto; }
         .hero-title { font-family: 'Judson', serif; font-weight: 700; color: var(--primary-color); font-size: 2.5rem; margin-bottom: 1rem; }
         
         .essay-card {
@@ -119,10 +145,18 @@
                 <a href="#"><i class="bi bi-chat-heart"></i> Góc Cảm Nhận</a>
 
                 <span class="menu-label mt-4">Cá nhân</span>
-                <a href="/gui-bai"><i class="bi bi-cloud-arrow-up"></i> Gửi Bài Viết</a>
-                <a href="#"><i class="bi bi-journal-text"></i> Bài Đã Đăng</a>
-                <a href="#"><i class="bi bi-bookmark-star"></i> Tủ Sách Trạm Văn</a>
-                <a href="#"><i class="bi bi-envelope"></i> Hòm Thư Tâm Sự</a>
+                
+                <% if (typeof user !== 'undefined' && user) { %>
+                    <a href="/gui-bai"><i class="bi bi-cloud-arrow-up"></i> Gửi Bài Viết</a>
+                    <a href="/bai-da-dang"><i class="bi bi-journal-text"></i> Bài Đã Đăng</a>
+                    <a href="/tu-sach"><i class="bi bi-bookmark-star"></i> Tủ Sách Trạm Văn</a>
+                    <a href="/hom-thu"><i class="bi bi-envelope"></i> Hòm Thư Tâm Sự</a>
+                <% } else { %>
+                    <a href="/dang-nhap"><i class="bi bi-cloud-arrow-up"></i> Gửi Bài Viết</a>
+                    <a href="/dang-nhap"><i class="bi bi-journal-text"></i> Bài Đã Đăng</a>
+                    <a href="/dang-nhap"><i class="bi bi-bookmark-star"></i> Tủ Sách Trạm Văn</a>
+                    <a href="/dang-nhap"><i class="bi bi-envelope"></i> Hòm Thư Tâm Sự</a>
+                <% } %>
             </div>
 
             <% if (typeof user !== 'undefined' && user && user.QuyenHan === 'admin') { %>
@@ -202,5 +236,23 @@
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let lastScrollTop = 0;
+        const topBar = document.querySelector('header.top-bar');
+
+        window.addEventListener('scroll', function() {
+            let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            
+            if (scrollTop > lastScrollTop && scrollTop > 100) {
+                // Đang cuộn xuống -> Ẩn thanh top-bar
+                topBar.classList.add('top-bar-hidden');
+            } else {
+                // Đang cuộn lên -> Hiện thanh top-bar
+                topBar.classList.remove('top-bar-hidden');
+            }
+            
+            lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; // Lưu lại vị trí hiện tại cho lần so sánh sau
+        }, false);
+    </script>
 </body>
 </html>

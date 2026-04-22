@@ -15,7 +15,7 @@ const auth = new google.auth.GoogleAuth({
     scopes: ['https://www.googleapis.com/auth/drive'],
 });
 const drive = google.drive({ version: 'v3', auth });
-const FOLDER_ID = 'THAY_BANG_ID_THU_MUC_DRIVE_CUA_BAN'; // <--- NHỚ ĐỔI ID NÀY NHÉ!
+const FOLDER_ID = '1Jx5ami51Exkt8PvnDZfjdR2SeOytecuZ?usp=drive_link'; // <--- NHỚ ĐỔI ID theo drive!
 
 // ==========================================
 // PHẦN 1: GIAO DIỆN NGƯỜI DÙNG (USER)
@@ -37,6 +37,22 @@ router.get('/', async (req, res) => {
 router.get('/gui-bai', (req, res) => {
     if (!req.session.user) return res.redirect('/dang-nhap');
     res.render('index'); 
+});
+
+// Các trang cá nhân (Sẽ thiết kế sau)
+router.get('/bai-da-dang', (req, res) => {
+    if (!req.session.user) return res.redirect('/dang-nhap');
+    res.send('<h2>🚧 Tính năng Bài Đã Đăng đang được xây dựng...</h2><a href="/">Quay lại trang chủ</a>');
+});
+
+router.get('/tu-sach', (req, res) => {
+    if (!req.session.user) return res.redirect('/dang-nhap');
+    res.send('<h2>🚧 Tính năng Tủ Sách đang được xây dựng...</h2><a href="/">Quay lại trang chủ</a>');
+});
+
+router.get('/hom-thu', (req, res) => {
+    if (!req.session.user) return res.redirect('/dang-nhap');
+    res.send('<h2>🚧 Tính năng Hòm Thư đang được xây dựng...</h2><a href="/">Quay lại trang chủ</a>');
 });
 
 // Xử lý nộp bài lên Drive

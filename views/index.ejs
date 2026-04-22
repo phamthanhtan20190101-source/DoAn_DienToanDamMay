@@ -100,16 +100,26 @@
             width: calc(100% - 280px);
         }
 
-        header.top-bar {
-            background: var(--white);
-            padding: 1rem 2rem;
-            display: flex;
-            justify-content: flex-end;
-            align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.03);
-            position: sticky;
-            top: 0;
-            z-index: 900;
+        header.top-bar { 
+            background: var(--white); 
+            padding: 1rem 2rem; 
+            display: flex; 
+            justify-content: flex-end; 
+            align-items: center; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.03); 
+            
+            /* --- THIẾT LẬP ĐỂ CÓ THỂ ẨN/HIỆN --- */
+            position: fixed; 
+            top: 0; 
+            right: 0;
+            width: calc(100% - 280px); 
+            z-index: 900; 
+            transition: transform 0.3s ease-in-out; /* Tạo hiệu ứng trượt mượt 0.3 giây */
+        }
+
+        /* Class này sẽ được JavaScript thêm vào khi cuộn xuống */
+        .top-bar-hidden {
+            transform: translateY(-100%); /* Đẩy thanh bar lên trên khuất màn hình */
         }
 
         .icon-btn-dark {
@@ -161,10 +171,11 @@
         }
 
         /* --- FORM UPLOAD CARD --- */
-        .page-container {
-            padding: 3rem;
-            max-width: 1000px;
-            margin: 0 auto;
+        .page-container { 
+            padding: 3rem; 
+            padding-top: 120px; /* Thêm dòng này để đẩy nội dung xuống khỏi Top-bar */
+            max-width: 1200px; 
+            margin: 0 auto; 
         }
 
         .section-header h2 {
@@ -258,12 +269,19 @@
                 <a href="/danh-sach"><i class="bi bi-grid-1x2"></i> Thư Viện Tài Liệu</a>
                 <a href="/"><i class="bi bi-stars"></i> Tác Phẩm Nổi Bật</a>
                 <a href="#"><i class="bi bi-chat-heart"></i> Góc Cảm Nhận</a>
-
+                <!--khi chưa đăng nhập nhập thì mở trang đăng nhập -->
                 <span class="menu-label mt-4">Cá nhân</span>
-                <a href="/gui-bai" class="active"><i class="bi bi-cloud-arrow-up"></i> Gửi Bài Viết</a>
-                <a href="#"><i class="bi bi-journal-text"></i> Bài Đã Đăng</a>
-                <a href="#"><i class="bi bi-bookmark-star"></i> Tủ Sách Trạm Văn</a>
-                <a href="#"><i class="bi bi-envelope"></i> Hòm Thư Tâm Sự</a>
+                <% if (typeof user !== 'undefined' && user) { %>
+                    <a href="/gui-bai" class="active"><i class="bi bi-cloud-arrow-up"></i> Gửi Bài Viết</a>
+                    <a href="/bai-da-dang"><i class="bi bi-journal-text"></i> Bài Đã Đăng</a>
+                    <a href="/tu-sach"><i class="bi bi-bookmark-star"></i> Tủ Sách Trạm Văn</a>
+                    <a href="/hom-thu"><i class="bi bi-envelope"></i> Hòm Thư Tâm Sự</a>
+                <% } else { %>
+                    <a href="/dang-nhap"><i class="bi bi-cloud-arrow-up"></i> Gửi Bài Viết</a>
+                    <a href="/dang-nhap"><i class="bi bi-journal-text"></i> Bài Đã Đăng</a>
+                    <a href="/dang-nhap"><i class="bi bi-bookmark-star"></i> Tủ Sách Trạm Văn</a>
+                    <a href="/dang-nhap"><i class="bi bi-envelope"></i> Hòm Thư Tâm Sự</a>
+                <% } %>
             </div>
 
             <% if (typeof user !== 'undefined' && user && user.QuyenHan === 'admin') { %>
@@ -384,6 +402,24 @@
                 fileDisplay.innerHTML = `<span class="text-success fw-bold"><i class="bi bi-check-circle-fill"></i> Sẵn sàng: ${name}</span>`;
             }
         });
+    </script>
+    <script>
+        let lastScrollTop = 0;
+        const topBar = document.querySelector('header.top-bar');
+
+        window.addEventListener('scroll', function() {
+            let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            
+            if (scrollTop > lastScrollTop && scrollTop > 100) {
+                // Đang cuộn xuống -> Ẩn thanh top-bar
+                topBar.classList.add('top-bar-hidden');
+            } else {
+                // Đang cuộn lên -> Hiện thanh top-bar
+                topBar.classList.remove('top-bar-hidden');
+            }
+            
+            lastScrollTop = scrollTop <= 0 ? 0 : scrollTop; // Lưu lại vị trí hiện tại cho lần so sánh sau
+        }, false);
     </script>
 </body>
 </html>
