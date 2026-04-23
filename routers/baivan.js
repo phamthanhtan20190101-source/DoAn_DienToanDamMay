@@ -3,7 +3,11 @@ const router = express.Router();
 const multer = require('multer');
 const { google } = require('googleapis');
 const fs = require('fs');
+const { GoogleGenerativeAI } = require("@google/generative-ai");
 
+// Khởi tạo AI với Key từ file .env
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+console.log("Kiểm tra Key:", process.env.GEMINI_API_KEY ? "Đã nhận Key ✅" : "Chưa nhận Key ❌");
 // Import các Models
 const BaiVan = require('../models/baivan');
 const TaiKhoan = require('../models/taikhoan');
@@ -354,7 +358,29 @@ router.get('/admin/sua-chu-de/:id', checkAdmin, async (req, res) => {
         res.status(500).send('Lỗi: ' + err.message); 
     }
 });
+// Route: Hiển thị danh sách bài viết cá nhân
+router.get('/bai-da-dang', async (req, res) => {
+    // 1. Kiểm tra đăng nhập
+    if (!req.session.user) return res.redirect('/dang-nhap');
 
+    try {
+        const userId = req.session.user._id;
+
+        // 2. Lấy danh sách bài viết của chính user đó
+        const danhSachBai = await BaiVan.find({ TacGia_id: userId })
+            .populate('TheLoai_id', 'TenTheLoai') // Lấy tên thể loại
+            .sort({ NgayDang: -1 }); // Mới nhất xếp trên cùng
+
+        // 3. Trả về giao diện
+        res.render('bai-da-dang', { 
+            danhSachBai, 
+            user: req.session.user,
+            titlePage: 'Bài Viết Của Tôi' 
+        });
+    } catch (err) {
+        res.status(500).send('Lỗi: ' + err.message);
+    }
+});
 // 5. Xử lý Cập nhật Chủ đề vào Database
 router.post('/admin/sua-chu-de/:id', checkAdmin, async (req, res) => {
     try {
@@ -527,6 +553,27 @@ router.post('/admin/sua-bai/:id', checkAdmin, async (req, res) => {
         res.redirect('/admin/quan-ly-bai-viet'); 
     } catch (err) { 
         res.status(500).send('Lỗi cập nhật: ' + err.message); 
+    }
+});
+//chat bot
+
+// API xử lý Chatbot AI
+router.post('/api/chat', async (req, res) => {
+    try {
+        // Đưa dòng này vào bên trong hàm try
+        // Thử đổi từ "gemini-1.5-flash" sang "gemini-1.5-flash-latest"
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
+        
+        const prompt = `Bạn là trợ lý ảo tên "Trạm Trưởng" của website Trạm Văn. 
+                        Hãy trả lời ngắn gọn, thân thiện bằng tiếng Việt. 
+                        Câu hỏi: ${req.body.message}`;
+        
+        const result = await model.generateContent(prompt);
+        const response = await result.response;
+        res.json({ success: true, text: response.text() });
+    } catch (err) {
+        console.error("LỖI :", err);
+        res.json({ success: false, text: "Trạm Trưởng đang bận học bài, thử lại sau nhé!" });
     }
 });
 module.exports = router;
