@@ -10,6 +10,7 @@ const TaiKhoan = require('./models/taikhoan');
 const TheLoai = require('./models/theloai');
 const BaiVan = require('./models/baivan');
 const BinhLuan = require('./models/binhluan');
+const ThongBao = require('./models/thongbao');
 
 // --- 3. NHẬP HỆ THỐNG ROUTER TRUNG TÂM ---
 // Node.js sẽ tự động tìm đến file index.js bên trong thư mục routers
@@ -30,9 +31,26 @@ app.use(session({
     cookie: { maxAge: 1000 * 60 * 60 * 24 } // Hiệu lực trong 1 ngày
 }));
 
-// Biến toàn cục để các file EJS nhận diện người dùng đang đăng nhập
-app.use((req, res, next) => {
+// Biến toàn cục để các file EJS nhận diện người dùng và tự động lấy thông báo
+app.use(async (req, res, next) => {
     res.locals.user = req.session.user || null;
+    
+    // Nếu có người dùng đăng nhập, tự động lấy thông báo cho họ
+    if (req.session.user) {
+        try {
+            // Lấy 5 thông báo mới nhất
+            res.locals.thongBaoList = await ThongBao.find({ TaiKhoan_id: req.session.user._id })
+                                            .sort({ NgayTao: -1 }).limit(5);
+            // Đếm số thông báo chưa đọc (để hiện số lên chấm đỏ)
+            res.locals.thongBaoChuaDoc = await ThongBao.countDocuments({ TaiKhoan_id: req.session.user._id, DaDoc: false });
+        } catch (err) {
+            res.locals.thongBaoList = [];
+            res.locals.thongBaoChuaDoc = 0;
+        }
+    } else {
+        res.locals.thongBaoList = [];
+        res.locals.thongBaoChuaDoc = 0;
+    }
     next();
 });
 

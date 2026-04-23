@@ -61,4 +61,57 @@ router.get('/dang-xuat', (req, res) => {
     res.redirect('/');
 });
 
+// ==========================================
+// PHẦN ADMIN: QUẢN LÝ NGƯỜI DÙNG
+// ==========================================
+
+// Middleware kiểm tra quyền admin (nếu trong file này chưa có)
+const checkAdmin = (req, res, next) => {
+    if (req.session.user && req.session.user.QuyenHan.toLowerCase() === 'admin') {
+        next();
+    } else {
+        res.status(403).send('Cấm truy cập: Bạn không có quyền quản trị.');
+    }
+};
+
+// 1. Trang danh sách người dùng
+router.get('/admin/quan-ly-nguoi-dung', checkAdmin, async (req, res) => {
+    try {
+        // Lấy tất cả user (Ngoại trừ tài khoản Admin đang đăng nhập để tránh lỡ tay tự khóa mình)
+        const danhSachNguoiDung = await TaiKhoan.find({ _id: { $ne: req.session.user._id } }).sort({ _id: -1 });
+        
+        res.render('admin/quan-ly-nguoi-dung', { 
+            danhSachNguoiDung, 
+            user: req.session.user 
+        });
+    } catch (err) {
+        res.status(500).send('Lỗi tải danh sách người dùng: ' + err.message);
+    }
+});
+
+// 2. Nút Khóa / Mở khóa tài khoản
+router.get('/admin/khoa-tai-khoan/:id', checkAdmin, async (req, res) => {
+    try {
+        const userToUpdate = await TaiKhoan.findById(req.params.id);
+        if (userToUpdate) {
+            // Đảo ngược trạng thái: Nếu đang 1 (Hoạt động) thì chuyển thành 0 (Khóa), và ngược lại
+            userToUpdate.KichHoat = userToUpdate.KichHoat === 1 ? 0 : 1;
+            await userToUpdate.save();
+        }
+        res.redirect('/admin/quan-ly-nguoi-dung');
+    } catch (err) {
+        res.status(500).send('Lỗi thao tác: ' + err.message);
+    }
+});
+
+// 3. Nút Xóa tài khoản
+router.get('/admin/xoa-tai-khoan/:id', checkAdmin, async (req, res) => {
+    try {
+        await TaiKhoan.findByIdAndDelete(req.params.id);
+        res.redirect('/admin/quan-ly-nguoi-dung');
+    } catch (err) {
+        res.status(500).send('Lỗi khi xóa: ' + err.message);
+    }
+});
+
 module.exports = router;

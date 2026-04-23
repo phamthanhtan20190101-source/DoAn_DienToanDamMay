@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Quản Lý Bài Viết - Trạm Văn Admin</title>
+    <title>Quản Lý Bình Luận - Trạm Văn Admin</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <style>
@@ -10,7 +10,6 @@
         body { background: var(--bg-color); font-family: 'Inter', sans-serif; display: flex; margin: 0; min-height: 100vh; }
         .main-content { flex-grow: 1; margin-left: 280px; padding: 40px; }
         .table-card { background: white; border-radius: 15px; padding: 25px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); }
-        .status-badge { padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; }
     </style>
 </head>
 <body>
@@ -34,11 +33,11 @@
 
             <span class="admin-group-label">Nội dung</span>
             <a href="/admin/them-the-loai"><i class="bi bi-tags me-2"></i> Quản Lý Thể Loại</a>
-            <a href="/admin/quan-ly-bai-viet" class="active"><i class="bi bi-journal-text me-2"></i> Quản Lý Bài Viết</a>
+            <a href="/admin/quan-ly-bai-viet"><i class="bi bi-journal-text me-2"></i> Quản Lý Bài Viết</a>
 
             <span class="admin-group-label">Cộng đồng</span>
-            <a href="/admin/quan-ly-nguoi-dung"><i class="bi bi-people me-2"></i> Quản Lý Người Dùng</a>
-            <a href="/admin/quan-ly-binh-luan"><i class="bi bi-chat-square-text me-2"></i> Quản Lý Bình Luận</a>
+            <a href="#"><i class="bi bi-people me-2"></i> Quản Lý Người Dùng</a>
+            <a href="/admin/quan-ly-binh-luan" class="active"><i class="bi bi-chat-square-text me-2"></i> Quản Lý Bình Luận</a>
 
             <span class="admin-group-label">Cấu hình</span>
             <a href="#"><i class="bi bi-gear me-2"></i> Cài Đặt Chung</a>
@@ -50,52 +49,61 @@
             </a>
         </div>
     </div>
+
     <div class="main-content">
-        <h2 class="mb-4" style="color: var(--primary-color); font-weight: 700;">Quản Lý Tất Cả Bài Viết</h2>
+        <h2 class="mb-4" style="color: var(--primary-color); font-weight: 700;">Quản Lý Bình Luận</h2>
 
         <div class="table-card">
             <table class="table table-hover align-middle">
                 <thead class="table-light">
                     <tr>
-                        <th>Tiêu đề</th>
-                        <th>Tác giả</th>
-                        <th>Thể loại</th>
-                        <th>Trạng thái</th>
-                        <th>Ngày đăng</th>
-                        <th>Hành động</th>
+                        <th style="width: 15%;">Người bình luận</th>
+                        <th style="width: 40%;">Nội dung</th>
+                        <th style="width: 20%;">Bài viết</th>
+                        <th style="width: 15%;">Thời gian</th>
+                        <th style="width: 10%;">Hành động</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <% danhSachTatCa.forEach(bai => { %>
+                    <% if (typeof danhSachBinhLuan !== 'undefined' && danhSachBinhLuan.length > 0) { %>
+                        <% danhSachBinhLuan.forEach(bl => { %>
+                            <tr>
+                                <td>
+                                    <strong><%= bl.TaiKhoan_id ? bl.TaiKhoan_id.HoTen : 'Vô danh' %></strong>
+                                </td>
+                                <td>
+                                    <div style="max-height: 80px; overflow-y: auto; font-size: 0.95rem; color: #444;">
+                                        <%= bl.NoiDung %>
+                                    </div>
+                                </td>
+                                <td>
+                                    <% if (bl.BaiVan_id) { %>
+                                        <a href="/bai-van/<%= bl.BaiVan_id._id %>" target="_blank" class="text-decoration-none" style="color: var(--primary-color); font-weight: 500; font-size: 0.9rem;">
+                                            <i class="bi bi-link-45deg"></i> <%= bl.BaiVan_id.TieuDe %>
+                                        </a>
+                                    <% } else { %>
+                                        <span class="text-danger small"><i class="bi bi-exclamation-circle"></i> Bài viết đã bị xóa</span>
+                                    <% } %>
+                                </td>
+                                <td class="text-muted small">
+                                    <%= new Date(bl.NgayBinhLuan).toLocaleDateString('vi-VN') %><br>
+                                    <%= new Date(bl.NgayBinhLuan).toLocaleTimeString('vi-VN') %>
+                                </td>
+                                <td>
+                                    <a href="/admin/xoa-binh-luan/<%= bl._id %>" class="btn btn-sm btn-outline-danger" title="Xóa bình luận" onclick="return confirm('Bạn có chắc chắn muốn xóa bình luận này không?');">
+                                        <i class="bi bi-trash"></i> Xóa
+                                    </a>
+                                </td>
+                            </tr>
+                        <% }) %>
+                    <% } else { %>
                         <tr>
-                            <td><strong><%= bai.TieuDe %></strong></td>
-                            <td><%= bai.TacGia_id ? bai.TacGia_id.HoTen : 'N/A' %></td>
-                            <td><span class="text-muted"><%= bai.TheLoai_id ? bai.TheLoai_id.TenTheLoai : 'Chưa phân loại' %></span></td>
-                            <td>
-                                <% if(bai.TrangThai === 'DaDuyet') { %>
-                                    <span class="status-badge bg-success-subtle text-success">Đã xuất bản</span>
-                                <% } else if(bai.TrangThai === 'ChoDuyet') { %>
-                                    <span class="status-badge bg-warning-subtle text-warning">Chờ duyệt</span>
-                                <% } else { %>
-                                    <span class="status-badge bg-danger-subtle text-danger">Bị từ chối</span>
-                                <% } %>
-                            </td>
-                            <td><%= new Date(bai.NgayDang).toLocaleDateString('vi-VN') %></td>
-                            <td>
-                                <div class="d-flex gap-2">
-                                    <a href="/bai-van/<%= bai._id %>" target="_blank" class="btn btn-sm btn-outline-primary"
-                                        title="Xem trước bài viết">
-                                        <i class="bi bi-eye"></i>
-                                    </a>
-                            
-                                    <a href="/admin/xoa-bai/<%= bai._id %>" class="btn btn-sm btn-outline-danger" title="Xóa bài viết"
-                                        onclick="return confirm('Bạn có chắc chắn muốn xóa bài viết này không?');">
-                                        <i class="bi bi-trash"></i>
-                                    </a>
-                                </div>
+                            <td colspan="5" class="text-center py-5 text-muted">
+                                <i class="bi bi-chat-left-dots fs-1 d-block mb-3"></i>
+                                Chưa có bình luận nào trên hệ thống.
                             </td>
                         </tr>
-                    <% }) %>
+                    <% } %>
                 </tbody>
             </table>
         </div>

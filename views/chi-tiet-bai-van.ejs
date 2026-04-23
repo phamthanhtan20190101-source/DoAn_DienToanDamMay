@@ -155,11 +155,30 @@
                             <% } %>
 
                             <div id="danhSachBinhLuan" class="py-3">
-                                <div class="text-center text-muted small py-4">
-                                    <i class="bi bi-chat-square-dots mb-2 fs-2 d-block opacity-25"></i>
-                                    Chưa có bình luận nào. Hãy là người đầu tiên chia sẻ cảm nghĩ!
-                                </div>
+    <% if (typeof danhSachBinhLuan !== 'undefined' && danhSachBinhLuan.length > 0) { %>
+        <% danhSachBinhLuan.forEach(bl => { %>
+            <div class="d-flex gap-3 mb-4">
+                <div class="comment-avatar rounded-circle shadow-sm flex-shrink-0" style="width: 45px; height: 45px;">
+                    <%= bl.TaiKhoan_id ? bl.TaiKhoan_id.HoTen.charAt(0).toUpperCase() : '?' %>
+                </div>
+                <div class="p-3 bg-light rounded-4 w-100">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <strong style="color: var(--primary-color);"><%= bl.TaiKhoan_id ? bl.TaiKhoan_id.HoTen : 'Người dùng ẩn danh' %></strong>
+                        <span class="text-muted small"><%= new Date(bl.NgayBinhLuan).toLocaleDateString('vi-VN') %></span>
+                    </div>
+                    <p class="mb-0 text-dark" style="line-height: 1.5; white-space: pre-wrap;">
+                        <%= bl.NoiDung %>
+                    </p>
+                    </div>
+                    </div>
+                    <% }) %>
+                        <% } else { %>
+                            <div id="noCommentMsg" class="text-center text-muted small py-4">
+                                <i class="bi bi-chat-square-dots mb-2 fs-2 d-block opacity-25"></i>
+                                Chưa có bình luận nào. Hãy là người đầu tiên chia sẻ cảm nghĩ!
                             </div>
+                            <% } %>
+                                </div>
                         </div>
 
                         <div class="mt-5 pt-4 border-top text-center">
@@ -227,6 +246,96 @@
             };
         }
     </script>
+
+    <script>
+        // XỬ LÝ GỬI BÌNH LUẬN AJAX
+        const btnGuiBinhLuan = document.getElementById('btnGuiBinhLuan');
+        const txtNoiDung = document.getElementById('noiDungBinhLuan');
+        const danhSachBinhLuan = document.getElementById('danhSachBinhLuan');
+        const noCommentMsg = document.getElementById('noCommentMsg');
+
+        if (btnGuiBinhLuan && txtNoiDung) {
+            btnGuiBinhLuan.addEventListener('click', async function () {
+                const noiDung = txtNoiDung.value.trim();
+                if (!noiDung) {
+                    alert("Vui lòng nhập nội dung bình luận!");
+                    return;
+                }
+
+                // Đổi text nút thành đang gởi
+                const originalText = this.innerHTML;
+                this.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Đang gửi...';
+                this.disabled = true;
+
+                try {
+                    const response = await fetch('/api/them-binh-luan', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            BaiVan_id: '<%= bai._id %>',
+                            NoiDung: noiDung
+                        })
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        // Xóa chữ "Chưa có bình luận nào" (nếu có)
+                        if (noCommentMsg) noCommentMsg.style.display = 'none';
+
+                        // Lấy ngày hiện tại format kiểu VN
+                        const today = new Date(data.NgayBinhLuan).toLocaleDateString('vi-VN');
+                        const charAvt = data.HoTen.charAt(0).toUpperCase();
+
+                        // Tạo khối HTML bình luận mới
+                        const newCommentHTML = `
+                            <div class="d-flex gap-3 mb-4" style="animation: fadeIn 0.5s;">
+                                <div class="comment-avatar rounded-circle shadow-sm flex-shrink-0" style="width: 45px; height: 45px;">
+                                    ${charAvt}
+                                </div>
+                                <div class="p-3 bg-light rounded-4 w-100">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <strong style="color: var(--primary-color);">${data.HoTen}</strong>
+                                        <span class="text-muted small">${today}</span>
+                                    </div>
+                                    <p class="mb-0 text-dark" style="line-height: 1.5; white-space: pre-wrap;">${data.NoiDung}</p>
+                                </div>
+                            </div>
+                        `;
+
+                        // Nhét bình luận mới lên ĐẦU danh sách
+                        danhSachBinhLuan.insertAdjacentHTML('afterbegin', newCommentHTML);
+
+                        // Xóa trống ô nhập
+                        txtNoiDung.value = '';
+                    } else {
+                        alert(data.msg);
+                    }
+                } catch (err) {
+                    console.error(err);
+                    alert("Có lỗi xảy ra khi gởi bình luận!");
+                } finally {
+                    // Khôi phục nút
+                    this.innerHTML = originalText;
+                    this.disabled = false;
+                }
+            });
+        }
+    </script>
+    <style>
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+    
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+
 </body>
 
 </html>

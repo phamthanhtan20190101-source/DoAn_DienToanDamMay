@@ -155,7 +155,40 @@
             <div class="user-info">
                 <% if (typeof user !== 'undefined' && user) { %>
                     <div class="d-flex align-items-center gap-3">
-                        <a href="#" class="icon-btn-dark"><i class="bi bi-gear-fill"></i></a>
+                        
+                        <div class="dropdown">
+                            <button class="icon-btn-dark position-relative border-0 dropdown-toggle-hide-arrow" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Thông báo">
+                                <i class="bi bi-bell-fill"></i>
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.65rem; transform: translate(-35%, 25%) !important;">
+                                    2
+                                </span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-3 rounded-4" style="width: 320px; padding: 0; overflow: hidden;">
+                                <li class="px-4 py-3 bg-light border-bottom">
+                                    <strong class="text-dark">Thông báo của bạn</strong>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item py-3 px-4 border-bottom text-wrap" href="#" style="font-size: 0.9rem; line-height: 1.5; white-space: normal;">
+                                        <i class="bi bi-check-circle-fill text-success me-2"></i>
+                                        Bài viết <strong>"Phân tích bài thơ Sóng"</strong> của bạn đã được duyệt!
+                                        <div class="text-muted small mt-1" style="font-size: 0.75rem;">10 phút trước</div>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item py-3 px-4 text-wrap" href="#" style="font-size: 0.9rem; line-height: 1.5; white-space: normal; background-color: #f8fdf5;">
+                                        <i class="bi bi-chat-dots-fill text-primary me-2"></i>
+                                        <strong>Vy Admin</strong> đã bình luận về tác phẩm của bạn.
+                                        <div class="text-muted small mt-1" style="font-size: 0.75rem;">2 giờ trước</div>
+                                    </a>
+                                </li>
+                                <li class="border-top">
+                                    <a class="dropdown-item text-center py-2 fw-bold text-muted small" href="#" style="background-color: #fcfdfa;">Xem tất cả</a>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <a href="#" class="icon-btn-dark" title="Cài đặt"><i class="bi bi-gear-fill"></i></a>
+                        
                         <div class="dropdown">
                             <button class="icon-btn-dark border-0" type="button" data-bs-toggle="dropdown">
                                 <i class="bi bi-person-fill"></i>

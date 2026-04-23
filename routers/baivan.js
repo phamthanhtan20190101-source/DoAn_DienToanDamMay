@@ -11,6 +11,7 @@ const TheLoai = require('../models/theloai');
 const YeuThich = require('../models/yeuthich');
 const LichSu = require('../models/lichsu');
 const ChuDe = require('../models/chude');
+const BinhLuan = require('../models/binhluan');
 
 // 1. CẤU HÌNH UPLOAD & GOOGLE DRIVE
 const upload = multer({ dest: 'uploads/' });
@@ -126,37 +127,43 @@ router.get('/tu-sach', async (req, res) =>  {
     }
 });
 
-// Trang chi tiết bài văn + Tự động tăng lượt xem & lưu lịch sử
+// Trang chi tiết bài văn + Tự động tăng lượt xem & lưu lịch sử & LOAD BÌNH LUẬN
 router.get('/bai-van/:id', async (req, res) => {
     try {
-        // CẬP NHẬT TẠI ĐÂY: Sử dụng findByIdAndUpdate để cộng dồn LuotXem
         const bai = await BaiVan.findByIdAndUpdate(
             req.params.id, 
-            { $inc: { LuotXem: 1 } }, // Tăng LuotXem thêm 1
-            { new: true } // Trả về dữ liệu mới nhất sau khi cộng
+            { $inc: { LuotXem: 1 } },
+            { new: true }
         )
         .populate('TacGia_id', 'HoTen')
         .populate('TheLoai_id', 'TenTheLoai');
         
         if (!bai) return res.status(404).send('Không tìm thấy bài văn');
 
+        // --- LẤY DANH SÁCH BÌNH LUẬN ---
+        const danhSachBinhLuan = await BinhLuan.find({ BaiVan_id: bai._id })
+            .populate('TaiKhoan_id', 'HoTen')
+            .sort({ NgayBinhLuan: -1 }); // Mới nhất xếp trên
+
         let isYeuThich = false;
         if (req.session.user) {
             const userId = req.session.user._id;
-            
-            // 1. Cập nhật lịch sử xem
             await LichSu.findOneAndUpdate(
                 { TaiKhoan_id: userId, BaiVan_id: bai._id },
                 { NgayXem: new Date() },
                 { upsert: true, new: true }
             );
-
-            // 2. Kiểm tra trạng thái yêu thích
             const checkYeuThich = await YeuThich.findOne({ TaiKhoan_id: userId, BaiVan_id: bai._id });
             if (checkYeuThich) isYeuThich = true;
         }
 
-        res.render('chi-tiet-bai-van', { bai, user: req.session.user, isYeuThich });
+        // Truyền danhSachBinhLuan ra ngoài giao diện
+        res.render('chi-tiet-bai-van', { 
+            bai, 
+            user: req.session.user, 
+            isYeuThich, 
+            danhSachBinhLuan 
+        });
     } catch (err) {
         res.status(500).send('Lỗi: ' + err.message);
     }
