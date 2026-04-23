@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Sửa Chủ Đề - Trạm Văn</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        :root { --primary-color: #435a24; --bg-color: #eef7e8; --sidebar-bg: #a8d08d; --white: #ffffff; }
+        body { background: var(--bg-color); font-family: 'Inter', sans-serif; }
+        .main-content { padding: 40px; max-width: 800px; margin: 0 auto; }
+        .upload-card { background: var(--white); border-radius: 20px; padding: 2.5rem; box-shadow: 0 10px 40px rgba(67, 90, 36, 0.05); }
+    </style>
+</head>
+<body>
+    <div class="main-content">
+        <div class="d-flex align-items-center mb-4">
+            <a href="/admin/quan-ly-chu-de" class="btn btn-outline-secondary me-3 rounded-circle" style="width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;">
+                <i class="bi bi-arrow-left"></i>
+            </a>
+            <h2 class="mb-0" style="color: var(--primary-color); font-weight: 700;">Chỉnh sửa Chủ đề</h2>
+        </div>
+        
+        <div class="upload-card">
+            <form action="/admin/sua-chu-de/<%= chuDe._id %>" method="POST">
+                <div class="mb-3">
+                    <label class="form-label fw-bold">Tên chủ đề</label>
+                    <input type="text" name="TenChuDe" class="form-control" value="<%= chuDe.TenChuDe %>" style="border-radius: 10px;" required>
+                </div>
+                <div class="mb-4">
+                    <label class="form-label fw-bold">Mô tả</label>
+                    <textarea name="MoTa" class="form-control" style="border-radius: 10px;" rows="3"><%= chuDe.MoTa %></textarea>
+                </div>
+                
+                <div class="d-flex gap-3">
+                    <button type="submit" class="btn btn-success w-50" style="background-color: var(--primary-color); border: none; border-radius: 10px; padding: 12px;">
+                        <i class="bi bi-save me-2"></i> Lưu Thay Đổi
+                    </button>
+                    <a href="/admin/quan-ly-chu-de" class="btn btn-light w-50" style="border-radius: 10px; padding: 12px; font-weight: 500;">
+                        Hủy bỏ
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

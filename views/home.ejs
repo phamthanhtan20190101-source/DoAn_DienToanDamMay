@@ -1,60 +1,256 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= (typeof titlePage !== 'undefined') ? titlePage : 'Trạm Văn' %></title>
+    <title>
+        <%= (typeof titlePage !=='undefined' ) ? titlePage : 'Trạm Văn' %>
+    </title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
-    <link href="https://fonts.googleapis.com/css2?family=Judson:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Judson:wght@400;700&family=Inter:wght@400;500;600&display=swap"
+        rel="stylesheet">
+
     <style>
         :root {
-            --primary-color: #435a24; 
-            --bg-color: #eef7e8;      
-            --sidebar-bg: #a8d08d;    
-            --accent-color: #627D47;  
+            --primary-color: #435a24;
+            --bg-color: #eef7e8;
+            --sidebar-bg: #a8d08d;
+            --accent-color: #627D47;
             --white: #ffffff;
-            --icon-bg-dark: #2c2f33;  
-            --icon-bg-hover: #40444b; 
+            --icon-bg-dark: #2c2f33;
+            --icon-bg-hover: #40444b;
         }
-        body { font-family: 'Inter', sans-serif; background-color: var(--bg-color); color: #333; margin: 0; display: flex; min-height: 100vh; }
-        .sidebar { width: 280px; background-color: var(--sidebar-bg); color: var(--primary-color); display: flex; flex-direction: column; position: fixed; height: 100vh; z-index: 1000; box-shadow: 2px 0 10px rgba(0,0,0,0.05); }
-        .sidebar-brand { padding: 2rem 1.5rem; display: flex; align-items: center; gap: 12px; text-decoration: none; border-bottom: 1px solid rgba(67, 90, 36, 0.15); }
-        .brand-name { font-family: 'Judson', serif; font-size: 1.8rem; font-weight: 700; color: var(--primary-color); }
-        .sidebar-menu { padding: 1.5rem 0; flex-grow: 1; }
-        .menu-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; padding: 0 1.5rem 0.75rem; color: rgba(67, 90, 36, 0.6); display: block; font-weight: 600; }
-        .sidebar a { padding: 0.85rem 1.5rem; color: var(--primary-color); text-decoration: none; display: flex; align-items: center; gap: 12px; font-weight: 500; transition: 0.2s; }
-        .sidebar a:hover, .sidebar a.active { background-color: rgba(255, 255, 255, 0.4); border-left: 4px solid var(--primary-color); font-weight: 600; }
-        .main-content { flex-grow: 1; margin-left: 280px; width: calc(100% - 280px); }
-        header.top-bar { 
-            background: var(--white); padding: 1rem 2rem; display: flex; 
-            justify-content: space-between; /* <-- Cực kỳ quan trọng */
-            align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.03); 
-            position: fixed; top: 0; right: 0; width: calc(100% - 280px); 
-            z-index: 900; 
-            transition: all 0.3s ease-in-out !important; /* Mượt mà cho tất cả */
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-color);
+            color: #333;
+            margin: 0;
+            display: flex;
+            min-height: 100vh;
         }
-        .top-bar-hidden { transform: translateY(-100%); }
-        .icon-btn-dark { width: 42px; height: 42px; border-radius: 50%; background-color: var(--icon-bg-dark); color: #e3e5e8; display: flex; align-items: center; justify-content: center; text-decoration: none; border: none; transition: 0.2s; font-size: 1.2rem; cursor: pointer; }
-        .icon-btn-dark:hover { background-color: var(--icon-bg-hover); color: #ffffff; }
-        .btn-auth-outline { border: 1px solid #dcdcdc; color: #555; font-weight: 500; text-decoration: none; }
-        .btn-auth-solid { background-color: var(--primary-color); color: var(--white); font-weight: 500; border: 1px solid var(--primary-color); text-decoration: none; }
-        .page-container { padding: 3rem; padding-top: 120px; max-width: 1200px; margin: 0 auto; }
-        .hero-title { font-family: 'Judson', serif; font-weight: 700; color: var(--primary-color); font-size: 2.5rem; margin-bottom: 1rem; }
-        .essay-card { background: var(--white); border-radius: 16px; padding: 1.5rem; border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.03); transition: all 0.3s ease; height: 100%; display: flex; flex-direction: column; }
-        .essay-card:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(67, 90, 36, 0.1); }
-        .badge-category { background-color: var(--bg-color); color: var(--primary-color); padding: 0.4rem 1rem; border-radius: 50px; font-weight: 600; font-size: 0.8rem; display: inline-block; margin-bottom: 1rem; }
-        .essay-title { font-family: 'Judson', serif; font-weight: 700; font-size: 1.4rem; color: #222; margin-bottom: 0.8rem; line-height: 1.4; }
-        .essay-excerpt { color: #666; font-size: 0.95rem; line-height: 1.6; margin-bottom: 1.5rem; flex-grow: 1; }
-        .essay-footer { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #eee; padding-top: 1rem; }
-        .author-info { font-size: 0.9rem; color: #555; font-weight: 500; }
-        .btn-read { background: none; border: none; color: var(--primary-color); font-weight: 600; text-decoration: none; display: flex; align-items: center; gap: 5px; transition: 0.2s; }
-        .btn-read:hover { color: var(--accent-color); gap: 8px; }
-    
-       /* --- HIỆU ỨNG ẨN/HIỆN SIDEBAR CHO HOME --- */
+
+        .sidebar {
+            width: 280px;
+            background-color: var(--sidebar-bg);
+            color: var(--primary-color);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            height: 100vh;
+            z-index: 1000;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .sidebar-brand {
+            padding: 2rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+            border-bottom: 1px solid rgba(67, 90, 36, 0.15);
+        }
+
+        .brand-name {
+            font-family: 'Judson', serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+
+        .sidebar-menu {
+            padding: 1.5rem 0;
+            flex-grow: 1;
+        }
+
+        .menu-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 0 1.5rem 0.75rem;
+            color: rgba(67, 90, 36, 0.6);
+            display: block;
+            font-weight: 600;
+        }
+
+        .sidebar a {
+            padding: 0.85rem 1.5rem;
+            color: var(--primary-color);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 500;
+            transition: 0.2s;
+        }
+
+        .sidebar a:hover,
+        .sidebar a.active {
+            background-color: rgba(255, 255, 255, 0.4);
+            border-left: 4px solid var(--primary-color);
+            font-weight: 600;
+        }
+
+        .main-content {
+            flex-grow: 1;
+            margin-left: 280px;
+            width: calc(100% - 280px);
+        }
+
+        header.top-bar {
+            background: var(--white);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            /* <-- Cực kỳ quan trọng */
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: calc(100% - 280px);
+            z-index: 900;
+            transition: all 0.3s ease-in-out !important;
+            /* Mượt mà cho tất cả */
+        }
+
+        .top-bar-hidden {
+            transform: translateY(-100%);
+        }
+
+        .icon-btn-dark {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background-color: var(--icon-bg-dark);
+            color: #e3e5e8;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            border: none;
+            transition: 0.2s;
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+        .icon-btn-dark:hover {
+            background-color: var(--icon-bg-hover);
+            color: #ffffff;
+        }
+
+        .btn-auth-outline {
+            border: 1px solid #dcdcdc;
+            color: #555;
+            font-weight: 500;
+            text-decoration: none;
+        }
+
+        .btn-auth-solid {
+            background-color: var(--primary-color);
+            color: var(--white);
+            font-weight: 500;
+            border: 1px solid var(--primary-color);
+            text-decoration: none;
+        }
+
+        .page-container {
+            padding: 3rem;
+            padding-top: 120px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .hero-title {
+            font-family: 'Judson', serif;
+            font-weight: 700;
+            color: var(--primary-color);
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .essay-card {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: none;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.03);
+            transition: all 0.3s ease;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .essay-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(67, 90, 36, 0.1);
+        }
+
+        .badge-category {
+            background-color: var(--bg-color);
+            color: var(--primary-color);
+            padding: 0.4rem 1rem;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+
+        .essay-title {
+            font-family: 'Judson', serif;
+            font-weight: 700;
+            font-size: 1.4rem;
+            color: #222;
+            margin-bottom: 0.8rem;
+            line-height: 1.4;
+        }
+
+        .essay-excerpt {
+            color: #666;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+            flex-grow: 1;
+        }
+
+        .essay-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid #eee;
+            padding-top: 1rem;
+        }
+
+        .author-info {
+            font-size: 0.9rem;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .btn-read {
+            background: none;
+            border: none;
+            color: var(--primary-color);
+            font-weight: 600;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: 0.2s;
+        }
+
+        .btn-read:hover {
+            color: var(--accent-color);
+            gap: 8px;
+        }
+
+        /* --- HIỆU ỨNG ẨN/HIỆN SIDEBAR CHO HOME --- */
         /* 2. HIỆU ỨNG ẨN/HIỆN SIDEBAR CHUẨN */
-        .sidebar, .main-content {
+        .sidebar,
+        .main-content {
             transition: all 0.3s ease-in-out !important;
         }
 
@@ -64,7 +260,7 @@
 
         body.sidebar-hidden .main-content {
             margin-left: 0 !important;
-            width: 100% !important; 
+            width: 100% !important;
         }
 
         /* 3. THÊM DÒNG NÀY: Ép thanh Top-bar giãn dài ra 100% để lấp chỗ trống */
@@ -74,16 +270,188 @@
 
         /* 4. NÚT TOGGLE GỌN GÀNG HƠN */
         .toggle-btn {
-            background: var(--primary-color); color: white; border: none;
-            padding: 8px 15px; border-radius: 8px; cursor: pointer;
-            transition: 0.3s; font-weight: bold; display: inline-flex;
-            align-items: center; gap: 5px; margin-bottom: 0; /* Bỏ margin dư thừa */
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            margin-bottom: 0;
+            /* Bỏ margin dư thừa */
         }
-        .toggle-btn:hover { background: var(--accent-color); }
-        .transition-hover { transition: all 0.3s ease; }
-        .transition-hover:hover { transform: translateY(-5px); box-shadow: 0 10px 25px rgba(67, 90, 36, 0.15) !important; }
+
+        .toggle-btn:hover {
+            background: var(--accent-color);
+        }
+
+        .transition-hover {
+            transition: all 0.3s ease;
+        }
+
+        .transition-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(67, 90, 36, 0.15) !important;
+        }
+
+        /* CSS cho Banner */
+        .hero-banner {
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            margin-bottom: 40px;
+        }
+
+        .banner-item {
+            height: 400px;
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+
+        .banner-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+        }
+
+        .banner-content {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            padding: 40px;
+            color: white;
+            width: 100%;
+            z-index: 2;
+        }
+
+        /* CSS cho Cuộn Ngang (Zing Style) */
+        .section-title {
+            font-family: 'Judson', serif;
+            font-weight: 700;
+            color: var(--primary-color);
+            font-size: 1.8rem;
+            border-left: 4px solid var(--primary-color);
+            padding-left: 10px;
+            margin-bottom: 20px;
+        }
+
+        .scrolling-wrapper {
+            display: flex;
+            flex-wrap: nowrap;
+            overflow-x: auto;
+            gap: 20px;
+            padding-bottom: 20px;
+            scrollbar-width: none;
+        }
+
+        .scrolling-wrapper::-webkit-scrollbar {
+            display: none;
+        }
+
+        .scrolling-card {
+            flex: 0 0 auto;
+            width: 320px;
+            /* Độ rộng mỗi thẻ khi lướt ngang */
+        }
+
+        /* Nút bấm trượt ngang */
+        .scrolling-container {
+            position: relative;
+        }
+
+        .btn-scroll {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: white;
+            border: 1px solid var(--primary-color);
+            color: var(--primary-color);
+            z-index: 10;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.3s;
+            font-size: 1.2rem;
+        }
+
+        .btn-scroll:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .btn-left {
+            left: -20px;
+        }
+
+        .btn-right {
+            right: -20px;
+        }
+
+        /* --- xếp hạng--- */
+        /* CSS cho Bảng xếp hạng #TramVanChart */
+        .ranking-number {
+            font-size: 3.5rem;
+            font-weight: 900;
+            line-height: 1;
+            font-family: 'Judson', serif;
+            margin-right: 15px;
+            min-width: 70px;
+            text-align: center;
+        }
+
+        .rank-1 {
+            color: #ffd700;
+            text-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+        }
+
+        /* Vàng */
+        .rank-2 {
+            color: #c0c0c0;
+            text-shadow: 0 4px 15px rgba(192, 192, 192, 0.4);
+        }
+
+        /* Bạc */
+        .rank-3 {
+            color: #cd7f32;
+            text-shadow: 0 4px 15px rgba(205, 127, 50, 0.4);
+        }
+
+        /* Đồng */
+        .rank-normal {
+            color: #e9ecef;
+        }
+
+        /* Hạng 4, 5 màu xám nhạt */
+
+        .chart-card {
+            background: white;
+            border-radius: 15px;
+            padding: 15px 20px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            border: 1px solid rgba(67, 90, 36, 0.05);
+        }
+
+        .chart-card:hover {
+            transform: translateX(10px);
+            /* Hiệu ứng trượt ngang nhẹ khi rê chuột */
+            box-shadow: 0 10px 25px rgba(67, 90, 36, 0.1);
+            background-color: #fcfdfa;
+        }
     </style>
 </head>
+
 <body>
 
     <aside class="sidebar">
@@ -91,42 +459,47 @@
             <i class="bi bi-feather fs-2" style="color: var(--primary-color);"></i>
             <span class="brand-name">Trạm Văn</span>
         </a>
-        
+
         <div class="sidebar-menu d-flex flex-column h-100" style="padding-bottom: 0;">
             <div>
                 <span class="menu-label">Cộng đồng</span>
-                <a href="/danh-sach" class="<%= (typeof titlePage !== 'undefined' && titlePage === 'Thư Viện Tài Liệu') ? 'active' : '' %>">
-    <i class="bi bi-grid-1x2"></i> Thư Viện Tài Liệu
-</a>
-                
-                
-                <a href="/" class="<%= (typeof titlePage === 'undefined' || titlePage === 'Tác Phẩm Nổi Bật') ? 'active' : '' %>">
+                <a href="/danh-sach"
+                    class="<%= (typeof titlePage !== 'undefined' && titlePage === 'Thư Viện Tài Liệu') ? 'active' : '' %>">
+                    <i class="bi bi-grid-1x2"></i> Thư Viện Tài Liệu
+                </a>
+
+
+                <a href="/"
+                    class="<%= (typeof titlePage === 'undefined' || titlePage === 'Tác Phẩm Nổi Bật') ? 'active' : '' %>">
                     <i class="bi bi-stars"></i> Tác Phẩm Nổi Bật
                 </a>
-                
+
                 <a href="#"><i class="bi bi-chat-heart"></i> Góc Cảm Nhận</a>
 
                 <span class="menu-label mt-4">Cá nhân</span>
-                <% if (typeof user !== 'undefined' && user) { %>
+                <% if (typeof user !=='undefined' && user) { %>
                     <a href="/gui-bai"><i class="bi bi-cloud-arrow-up"></i> Gửi Bài Viết</a>
                     <a href="/bai-da-dang"><i class="bi bi-journal-text"></i> Bài Đã Đăng</a>
-                    <a href="/tu-sach" class="<%= (typeof isTuSach !== 'undefined' && isTuSach) ? 'active' : '' %>"><i class="bi bi-bookmark-star"></i> Tủ Sách Trạm Văn</a>
+                    <a href="/tu-sach" class="<%= (typeof isTuSach !== 'undefined' && isTuSach) ? 'active' : '' %>"><i
+                            class="bi bi-bookmark-star"></i> Tủ Sách Trạm Văn</a>
                     <a href="/hom-thu"><i class="bi bi-envelope"></i> Hòm Thư Tâm Sự</a>
-                <% } else { %>
-                    <a href="/dang-nhap"><i class="bi bi-cloud-arrow-up"></i> Gửi Bài Viết</a>
-                    <a href="/dang-nhap"><i class="bi bi-journal-text"></i> Bài Đã Đăng</a>
-                    <a href="/dang-nhap"><i class="bi bi-bookmark-star"></i> Tủ Sách Trạm Văn</a>
-                    <a href="/dang-nhap"><i class="bi bi-envelope"></i> Hòm Thư Tâm Sự</a>
-                <% } %>
+                    <% } else { %>
+                        <a href="/dang-nhap"><i class="bi bi-cloud-arrow-up"></i> Gửi Bài Viết</a>
+                        <a href="/dang-nhap"><i class="bi bi-journal-text"></i> Bài Đã Đăng</a>
+                        <a href="/dang-nhap"><i class="bi bi-bookmark-star"></i> Tủ Sách Trạm Văn</a>
+                        <a href="/dang-nhap"><i class="bi bi-envelope"></i> Hòm Thư Tâm Sự</a>
+                        <% } %>
             </div>
 
-            <% if (typeof user !== 'undefined' && user && user.QuyenHan === 'admin') { %>
-                <div class="mt-auto pt-3 border-top" style="border-color: rgba(67, 90, 36, 0.15) !important; padding: 0 20px 20px 20px;">
-                    <a href="/admin/dashboard" class="btn w-100 shadow-sm" style="background-color: var(--primary-color); color: white; border-radius: 10px; font-weight: 600; padding: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 0;">
+            <% if (typeof user !=='undefined' && user && user.QuyenHan==='admin' ) { %>
+                <div class="mt-auto pt-3 border-top"
+                    style="border-color: rgba(67, 90, 36, 0.15) !important; padding: 0 20px 20px 20px;">
+                    <a href="/admin/dashboard" class="btn w-100 shadow-sm"
+                        style="background-color: var(--primary-color); color: white; border-radius: 10px; font-weight: 600; padding: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 0;">
                         <i class="bi bi-shield-lock me-2"></i> Vào Trang Quản Trị
                     </a>
                 </div>
-            <% } %>
+                <% } %>
         </div>
     </aside>
 
@@ -135,41 +508,49 @@
             <button id="sidebarToggle" class="toggle-btn">
                 <i class="bi bi-list"></i> Menu
             </button>
-            <% if (typeof user !== 'undefined' && user) { %>
+            <% if (typeof user !=='undefined' && user) { %>
                 <div class="d-flex align-items-center gap-3">
                     <a href="#" class="icon-btn-dark" title="Cài đặt"><i class="bi bi-gear-fill"></i></a>
                     <div class="dropdown">
-                        <button class="icon-btn-dark dropdown-toggle-hide-arrow" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Tài khoản">
+                        <button class="icon-btn-dark dropdown-toggle-hide-arrow" type="button" data-bs-toggle="dropdown"
+                            aria-expanded="false" title="Tài khoản">
                             <i class="bi bi-person-fill"></i>
                         </button>
-                        <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-3 rounded-3" style="min-width: 220px;">
-                            <li class="px-3 py-2 text-muted small">Đang đăng nhập với tên<br><strong class="text-dark fs-6"><%= user.HoTen %></strong></li>
-                            <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item py-2" href="#"><i class="bi bi-person me-2"></i> Hồ sơ cá nhân</a></li>
-                            <li><a class="dropdown-item py-2 text-danger" href="/dang-xuat"><i class="bi bi-box-arrow-right me-2"></i> Đăng xuất</a></li>
+                        <ul class="dropdown-menu dropdown-menu-end shadow border-0 mt-3 rounded-3"
+                            style="min-width: 220px;">
+                            <li class="px-3 py-2 text-muted small">Đang đăng nhập với tên<br><strong
+                                    class="text-dark fs-6">
+                                    <%= user.HoTen %>
+                                </strong></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li><a class="dropdown-item py-2" href="#"><i class="bi bi-person me-2"></i> Hồ sơ cá
+                                    nhân</a></li>
+                            <li><a class="dropdown-item py-2 text-danger" href="/dang-xuat"><i
+                                        class="bi bi-box-arrow-right me-2"></i> Đăng xuất</a></li>
                         </ul>
                     </div>
                 </div>
-            <% } else { %>
-                <div class="d-flex gap-3">
-                    <a href="/dang-ky" class="btn btn-auth-outline rounded-pill px-4 py-2">Đăng ký</a>
-                    <a href="/dang-nhap" class="btn btn-auth-solid rounded-pill px-4 py-2">Đăng nhập</a>
-                </div>
-            <% } %>
+                <% } else { %>
+                    <div class="d-flex gap-3">
+                        <a href="/dang-ky" class="btn btn-auth-outline rounded-pill px-4 py-2">Đăng ký</a>
+                        <a href="/dang-nhap" class="btn btn-auth-solid rounded-pill px-4 py-2">Đăng nhập</a>
+                    </div>
+                    <% } %>
         </header>
 
         <div class="page-container">
             <div class="d-flex justify-content-between align-items-end mb-5">
                 <div>
-                    <h1 class="hero-title"><%= (typeof titlePage !== 'undefined') ? titlePage : 'Tác Phẩm Nổi Bật' %></h1>
+                    <h1 class="hero-title">
+                        <%= (typeof titlePage !=='undefined' ) ? titlePage : 'Trạm Văn' %>
+                    </h1>
                     <p class="text-muted fs-5 mb-0">
-                        <% if (typeof isTuSach !== 'undefined' && isTuSach) { %>
-                            Lưu giữ những áng văn tâm đắc của bạn.
-                        <% } else if (typeof titlePage !== 'undefined' && titlePage === 'Thư Viện Tài Liệu') { %>
-                            Khám phá kho tàng tri thức với hàng trăm bài văn xuất sắc.
-                        <% } else { %>
-                            Tuyển tập những bài văn được cộng đồng đánh giá cao nhất.
-                        <% } %>
+                        <% if (typeof isTuSach !=='undefined' && isTuSach) { %> Lưu giữ những áng văn tâm đắc của bạn.
+                            <% } else if (typeof titlePage !=='undefined' && titlePage==='Thư Viện Tài Liệu' ) { %> Khám
+                                phá kho tàng tri thức với hàng trăm bài văn xuất sắc.
+                                <% } else { %> Tuyển tập những bài văn được cộng đồng đánh giá cao nhất. <% } %>
                     </p>
                 </div>
                 <a href="/gui-bai" class="btn btn-auth-solid rounded-pill px-4 py-2 shadow-sm">
@@ -177,100 +558,274 @@
                 </a>
             </div>
 
-            <% if (typeof isTuSach !== 'undefined' && isTuSach) { %>
-                <div class="mb-5">
-                    <h4 class="mb-4 text-muted"><i class="bi bi-clock-history me-2"></i>Vừa xem gần đây</h4>
-                    <div class="row g-4">
-                        <% if (typeof lichSu !== 'undefined' && lichSu.length > 0) { %>
-                            <% lichSu.forEach(item => { %>
-                                <% if (item.BaiVan_id) { %>
-                                    <div class="col-md-4">
-                                        <div class="essay-card" style="background-color: #fcfdfa; border: 1px solid rgba(67, 90, 36, 0.1);">
-                                            <div>
-                                                <span class="badge-category" style="font-size: 0.7rem;">Ngày xem: <%= new Date(item.NgayXem).toLocaleDateString('vi-VN') %></span>
-                                                <h3 class="essay-title" style="font-size: 1.1rem;"><%= item.BaiVan_id.TieuDe %></h3>
-                                            </div>
-                                            <div class="mt-auto pt-2 text-end">
-                                                <a href="/bai-van/<%= item.BaiVan_id._id %>" class="btn-read" style="font-size: 0.9rem;">Đọc tiếp <i class="bi bi-arrow-right"></i></a>
-                                            </div>
+            <% if (typeof isTuSach==='undefined' || !isTuSach) { %>
+
+                <% if (typeof danhSachBanner !=='undefined' && danhSachBanner.length> 0) { %>
+                    <div id="bannerCarousel" class="carousel slide hero-banner mb-5" data-bs-ride="carousel">
+                        <div class="carousel-inner">
+                            <% danhSachBanner.forEach((banner, index)=> { %>
+                                <div class="carousel-item <%= index === 0 ? 'active' : '' %> banner-item"
+                                    style="background-image: url('<%= banner.HinhAnh %>');">
+                                    <div class="banner-overlay"></div>
+                                    <div class="banner-content">
+                                        <h2 class="fw-bold mb-3"
+                                            style="font-family: 'Judson', serif; font-size: 2.5rem;">
+                                            <%= banner.TieuDe %>
+                                        </h2>
+                                        <a href="<%= banner.DuongDan %>" class="btn px-4 py-2 rounded-pill fw-bold"
+                                            style="background-color: var(--primary-color); color: white; border:none;">Khám
+                                            phá ngay</a>
+                                    </div>
+                                </div>
+                                <% }) %>
+                        </div>
+                        <button class="carousel-control-prev" type="button" data-bs-target="#bannerCarousel"
+                            data-bs-slide="prev"><span class="carousel-control-prev-icon"></span></button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#bannerCarousel"
+                            data-bs-slide="next"><span class="carousel-control-next-icon"></span></button>
+                    </div>
+                    <% } %>
+
+                        <% if (typeof baiVietTheoChuDe !=='undefined' && baiVietTheoChuDe.length> 0) { %>
+                            <% baiVietTheoChuDe.forEach(nhom=> { %>
+                                <div class="mb-5">
+                                    <div class="d-flex justify-content-between align-items-end mb-3">
+                                        <h3 class="section-title mb-0">
+                                            <%= nhom.chuDe.TenChuDe %>
+                                        </h3>
+                                    </div>
+                                    <div class="position-relative scrolling-container">
+
+                                        <button class="btn-scroll btn-left"><i class="bi bi-chevron-left"></i></button>
+                                        <button class="btn-scroll btn-right"><i
+                                                class="bi bi-chevron-right"></i></button>
+
+                                        <div class="scrolling-wrapper">
+                                            <% nhom.danhSach.forEach(bai=> { %>
+                                                <div class="scrolling-card">
+                                                    <div class="essay-card bg-white rounded-4 p-4 d-flex flex-column h-100 position-relative transition-hover"
+                                                        style="box-shadow: 0 4px 15px rgba(67, 90, 36, 0.05); border: 1px solid rgba(67, 90, 36, 0.08);">
+                                                        <div
+                                                            class="d-flex justify-content-between align-items-center mb-3">
+                                                            <span class="badge"
+                                                                style="background-color: #eef7e8; color: var(--primary-color); padding: 6px 12px; font-weight: 600;">
+                                                                <%= bai.TheLoai_id ? bai.TheLoai_id.TenTheLoai
+                                                                    : 'Bài viết' %>
+                                                            </span>
+                                                            <span class="text-muted small fw-medium"><i
+                                                                    class="bi bi-eye"></i>
+                                                                <%= bai.LuotXem || 0 %>
+                                                            </span>
+                                                        </div>
+                                                        <a href="/bai-van/<%= bai._id %>"
+                                                            class="text-decoration-none flex-grow-1">
+                                                            <h5 class="fw-bold mb-2"
+                                                                style="color: #222; font-family: 'Judson', serif; line-height: 1.4;">
+                                                                <%= bai.TieuDe %>
+                                                            </h5>
+                                                            <p class="text-muted small"
+                                                                style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
+                                                                <%= bai.TomTat || 'Đang cập nhật nội dung...' %>
+                                                            </p>
+                                                        </a>
+                                                        <div
+                                                            class="d-flex align-items-center gap-2 text-muted small fw-medium pt-3 mt-2 border-top">
+                                                            <i class="bi bi-person-circle fs-5"></i>
+                                                            <%= bai.TacGia_id ? bai.TacGia_id.HoTen : 'Vy Admin' %>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <% }) %>
                                         </div>
                                     </div>
-                                <% } %>
-                            <% }) %>
-                        <% } else { %>
-                            <div class="col-12 text-center text-muted py-3">Bạn chưa xem tác phẩm nào gần đây.</div>
-                        <% } %>
-                    </div>
-                </div>
-                <hr class="mb-5 opacity-10">
-                <h4 class="mb-4 text-muted"><i class="bi bi-heart-fill text-danger me-2"></i>Danh sách yêu thích</h4>
-            <% } %>
-
-            <div class="row g-4">
-                <% if (typeof danhSachBai !== 'undefined' && danhSachBai.length > 0) { %>
-                    <% danhSachBai.forEach(bai => { %>
-                        <div class="col-md-4 mb-4">
-                            <div class="essay-card bg-white rounded-4 p-4 d-flex flex-column h-100 position-relative transition-hover"
-                                style="box-shadow: 0 4px 15px rgba(67, 90, 36, 0.05); border: 1px solid rgba(67, 90, 36, 0.08);">
-                        
-                                <div class="d-flex justify-content-between align-items-center mb-3">
-                                    <span class="badge"
-                                        style="background-color: #eef7e8; color: var(--primary-color); padding: 6px 12px; font-weight: 600;">
-                                        <%= bai.TheLoai_id ? bai.TheLoai_id.TenTheLoai : 'Chưa phân loại' %>
-                                    </span>
-                                    <span class="text-muted small fw-medium" title="Lượt xem">
-                                        <i class="bi bi-eye"></i>
-                                        <%= bai.LuotXem || 0 %>
-                                    </span>
                                 </div>
-                        
-                                <a href="/bai-van/<%= bai._id %>" class="text-decoration-none flex-grow-1">
-                                    <h4 class="fw-bold mb-2" style="color: #222; font-family: 'Judson', serif; line-height: 1.4;">
-                                        <%= bai.TieuDe %>
-                                    </h4>
-                                    <p class="text-muted small"
-                                        style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.6;">
-                                        <%= bai.TomTat || 'Đang cập nhật nội dung tóm tắt cho bài viết này...' %>
-                                    </p>
-                                </a>
-                        
-                                <div class="d-flex justify-content-between align-items-center pt-3 mt-2 border-top"
-                                    style="border-color: rgba(67, 90, 36, 0.1) !important;">
-                                    <div class="d-flex align-items-center gap-2 text-muted small fw-medium">
-                                        <i class="bi bi-person-circle fs-5"></i>
-                                        <%= bai.TacGia_id ? bai.TacGia_id.HoTen : 'Vy Admin' %>
-                                    </div>
-                                    <a href="/bai-van/<%= bai._id %>" class="text-decoration-none fw-bold" style="color: var(--primary-color);">
-                                        Đọc tiếp <i class="bi bi-arrow-right ms-1"></i>
-                                    </a>
-                                    </div>
-                                    
-                                    </div>
-                                    </div>
-                    <% }) %>
-                <% } else { %>
-                    <div class="col-12 text-center text-muted py-5">
-                        <i class="bi bi-inbox fs-1"></i>
-                        <p class="mt-2">Chưa có tác phẩm nào để hiển thị.</p>
-                    </div>
-                <% } %>
-            </div>
+                                <% }) %>
+                                    <% } %>
+                                        <% if (typeof topBaiViet !=='undefined' && topBaiViet.length> 0) { %>
+                                            <div class="mt-5 mb-5 p-4 rounded-4"
+                                                style="background: linear-gradient(145deg, #ffffff, #f4f9f1); box-shadow: 0 10px 30px rgba(67,90,36,0.05);">
+                                            
+                                                <h3 class="section-title mb-4" style="font-family: 'Judson', serif; font-weight: 700; color: var(--primary-color);">
+                                                    <i class="bi bi-bar-chart-line-fill me-2" style="color: #ffd700;"></i>#TrạmVănChart
+                                                </h3>
+                                            
+                                                <div class="row align-items-center">
+                                            
+                                                    <div class="col-lg-5">
+                                                        <div class="d-flex flex-column gap-3">
+                                                            <% topBaiViet.forEach((bai, index)=> { %>
+                                                                <% let rankClass='rank-normal' ; if (index===0) rankClass='rank-1' ; else if (index===1)
+                                                                    rankClass='rank-2' ; else if (index===2) rankClass='rank-3' ; %>
+                                                                    <a href="/bai-van/<%= bai._id %>" class="text-decoration-none text-dark">
+                                                                        <div class="chart-card">
+                                                                            <div class="ranking-number <%= rankClass %>"
+                                                                                style="font-size: 2.5rem; min-width: 50px;">
+                                                                                <%= index < 9 ? '0' + (index + 1) : (index + 1) %>
+                                                                            </div>
+                                                                            <div class="flex-grow-1">
+                                                                                <h6 class="fw-bold mb-0 text-truncate" style="max-width: 150px;">
+                                                                                    <%= bai.TieuDe %>
+                                                                                </h6>
+                                                                                <small class="text-muted">
+                                                                                    <%= bai.LuotXem || 0 %> lượt xem
+                                                                                </small>
+                                                                            </div>
+                                                                        </div>
+                                                                    </a>
+                                                                    <% }) %>
+                                                        </div>
+                                                    </div>
+                                            
+                                                    <div class="col-lg-7">
+                                                        <div style="height: 300px; position: relative;">
+                                                            <canvas id="trendingChart"></canvas>
+                                                        </div>
+                                                    </div>
+                                            
+                                                </div>
+                                            </div>
+                                            <% } %>
+                                                <h4 class="mb-4 text-muted mt-5"><i class="bi bi-stars me-2"></i>Mới cập
+                                                    nhật
+                                                </h4>
+                                                <% } %>
+
+
+                                                    <% if (typeof isTuSach !=='undefined' && isTuSach) { %>
+                                                        <div class="mb-5">
+                                                            <h4 class="mb-4 text-muted"><i
+                                                                    class="bi bi-clock-history me-2"></i>Vừa xem gần đây
+                                                            </h4>
+                                                            <div class="row g-4">
+                                                                <% if (typeof lichSu !=='undefined' && lichSu.length> 0)
+                                                                    { %>
+                                                                    <% lichSu.forEach(item=> { %>
+                                                                        <% if (item.BaiVan_id) { %>
+                                                                            <div class="col-md-4">
+                                                                                <div class="essay-card"
+                                                                                    style="background-color: #fcfdfa; border: 1px solid rgba(67, 90, 36, 0.1);">
+                                                                                    <div>
+                                                                                        <span class="badge-category"
+                                                                                            style="font-size: 0.7rem;">Ngày
+                                                                                            xem:
+                                                                                            <%= new
+                                                                                                Date(item.NgayXem).toLocaleDateString('vi-VN')
+                                                                                                %>
+                                                                                        </span>
+                                                                                        <h3 class="essay-title"
+                                                                                            style="font-size: 1.1rem;">
+                                                                                            <%= item.BaiVan_id.TieuDe %>
+                                                                                        </h3>
+                                                                                    </div>
+                                                                                    <div class="mt-auto pt-2 text-end">
+                                                                                        <a href="/bai-van/<%= item.BaiVan_id._id %>"
+                                                                                            class="btn-read"
+                                                                                            style="font-size: 0.9rem;">Đọc
+                                                                                            tiếp
+                                                                                            <i
+                                                                                                class="bi bi-arrow-right"></i></a>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            <% } %>
+                                                                                <% }) %>
+                                                                                    <% } else { %>
+                                                                                        <div
+                                                                                            class="col-12 text-center text-muted py-3">
+                                                                                            Bạn chưa xem tác phẩm nào
+                                                                                            gần đây.
+                                                                                        </div>
+                                                                                        <% } %>
+                                                            </div>
+                                                        </div>
+                                                        <hr class="mb-5 opacity-10">
+                                                        <h4 class="mb-4 text-muted"><i
+                                                                class="bi bi-heart-fill text-danger me-2"></i>Danh sách
+                                                            yêu
+                                                            thích</h4>
+                                                        <% } %>
+
+                                                            <div class="row g-4">
+                                                                <% if (typeof danhSachBai !=='undefined' &&
+                                                                    danhSachBai.length>
+                                                                    0) { %>
+                                                                    <% danhSachBai.forEach(bai=> { %>
+                                                                        <div class="col-md-4 mb-4">
+                                                                            <div class="essay-card bg-white rounded-4 p-4 d-flex flex-column h-100 position-relative transition-hover"
+                                                                                style="box-shadow: 0 4px 15px rgba(67, 90, 36, 0.05); border: 1px solid rgba(67, 90, 36, 0.08);">
+                                                                                <div
+                                                                                    class="d-flex justify-content-between align-items-center mb-3">
+                                                                                    <span class="badge"
+                                                                                        style="background-color: #eef7e8; color: var(--primary-color); padding: 6px 12px; font-weight: 600;">
+                                                                                        <%= bai.TheLoai_id ?
+                                                                                            bai.TheLoai_id.TenTheLoai
+                                                                                            : 'Chưa phân loại' %>
+                                                                                    </span>
+                                                                                    <span
+                                                                                        class="text-muted small fw-medium"
+                                                                                        title="Lượt xem"><i
+                                                                                            class="bi bi-eye"></i>
+                                                                                        <%= bai.LuotXem || 0 %>
+                                                                                    </span>
+                                                                                </div>
+                                                                                <a href="/bai-van/<%= bai._id %>"
+                                                                                    class="text-decoration-none flex-grow-1">
+                                                                                    <h4 class="fw-bold mb-2"
+                                                                                        style="color: #222; font-family: 'Judson', serif; line-height: 1.4;">
+                                                                                        <%= bai.TieuDe %>
+                                                                                    </h4>
+                                                                                    <p class="text-muted small"
+                                                                                        style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.6;">
+                                                                                        <%= bai.TomTat
+                                                                                            || 'Đang cập nhật nội dung tóm tắt cho bài viết này...'
+                                                                                            %>
+                                                                                    </p>
+                                                                                </a>
+                                                                                <div class="d-flex justify-content-between align-items-center pt-3 mt-2 border-top"
+                                                                                    style="border-color: rgba(67, 90, 36, 0.1) !important;">
+                                                                                    <div
+                                                                                        class="d-flex align-items-center gap-2 text-muted small fw-medium">
+                                                                                        <i
+                                                                                            class="bi bi-person-circle fs-5"></i>
+                                                                                        <%= bai.TacGia_id ?
+                                                                                            bai.TacGia_id.HoTen
+                                                                                            : 'Vy Admin' %>
+                                                                                    </div>
+                                                                                    <a href="/bai-van/<%= bai._id %>"
+                                                                                        class="text-decoration-none fw-bold"
+                                                                                        style="color: var(--primary-color);">Đọc
+                                                                                        tiếp <i
+                                                                                            class="bi bi-arrow-right ms-1"></i></a>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                        <% }) %>
+                                                                            <% } else { %>
+                                                                                <div
+                                                                                    class="col-12 text-center text-muted py-5">
+                                                                                    <i class="bi bi-inbox fs-1"></i>
+                                                                                    <p class="mt-2">Chưa có tác phẩm nào
+                                                                                        để hiển
+                                                                                        thị.</p>
+                                                                                </div>
+                                                                                <% } %>
+                                                            </div>
         </div>
     </main>
-
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         let lastScrollTop = 0;
         const topBar = document.querySelector('header.top-bar');
-        window.addEventListener('scroll', function() {
+        window.addEventListener('scroll', function () {
             let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-            if (scrollTop > lastScrollTop && scrollTop > 100) { topBar.classList.add('top-bar-hidden'); } 
+            if (scrollTop > lastScrollTop && scrollTop > 100) { topBar.classList.add('top-bar-hidden'); }
             else { topBar.classList.remove('top-bar-hidden'); }
             lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
         }, false);
     </script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const sidebarToggle = document.getElementById('sidebarToggle');
             const body = document.body;
 
@@ -284,7 +839,7 @@
                 // Xử lý khi bấm nút
                 sidebarToggle.addEventListener('click', () => {
                     body.classList.toggle('sidebar-hidden');
-                    
+
                     const icon = sidebarToggle.querySelector('i');
                     if (body.classList.contains('sidebar-hidden')) {
                         icon.className = 'bi bi-layout-sidebar-inset';
@@ -297,5 +852,99 @@
             }
         });
     </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const containers = document.querySelectorAll('.scrolling-container');
+
+            containers.forEach(container => {
+                const wrapper = container.querySelector('.scrolling-wrapper');
+                const btnLeft = container.querySelector('.btn-left');
+                const btnRight = container.querySelector('.btn-right');
+
+                // 1. Chức năng BẤM NÚT (Click)
+                btnLeft.addEventListener('click', () => {
+                    wrapper.scrollBy({ left: -350, behavior: 'smooth' }); // Lướt lùi 350px
+                });
+                btnRight.addEventListener('click', () => {
+                    wrapper.scrollBy({ left: 350, behavior: 'smooth' }); // Lướt tới 350px
+                });
+
+                // 2. Chức năng KÉO THẢ (Drag)
+                let isDown = false;
+                let startX, scrollLeft;
+
+                wrapper.style.cursor = 'grab';
+                wrapper.addEventListener('mousedown', (e) => {
+                    isDown = true;
+                    wrapper.style.cursor = 'grabbing';
+                    startX = e.pageX - wrapper.offsetLeft;
+                    scrollLeft = wrapper.scrollLeft;
+                });
+                wrapper.addEventListener('mouseleave', () => { isDown = false; wrapper.style.cursor = 'grab'; });
+                wrapper.addEventListener('mouseup', () => { isDown = false; wrapper.style.cursor = 'grab'; });
+                wrapper.addEventListener('mousemove', (e) => {
+                    if (!isDown) return;
+                    e.preventDefault();
+                    const x = e.pageX - wrapper.offsetLeft;
+                    const walk = (x - startX) * 2;
+                    wrapper.scrollLeft = scrollLeft - walk;
+                });
+            });
+        });
+    </script>
+    
+    <% if (typeof topBaiViet !== 'undefined' && topBaiViet.length > 0) { %>
+    <script>
+        // Sử dụng JSON.parse để VS Code không báo lỗi cú pháp
+        const topTitles = JSON.parse('<%- JSON.stringify(topBaiViet.map(b => b.TieuDe)) %>');
+        const topViews = JSON.parse('<%- JSON.stringify(topBaiViet.map(b => b.LuotXem || 0)) %>');
+
+        const ctx = document.getElementById('trendingChart').getContext('2d');
+        const gradient = ctx.createLinearGradient(0, 0, 0, 300);
+        gradient.addColorStop(0, 'rgba(67, 90, 36, 0.3)'); 
+        gradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: topTitles.map(t => t.length > 15 ? t.substring(0, 15) + '..' : t),
+                datasets: [{
+                    label: 'Lượt xem',
+                    data: topViews,
+                    borderColor: '#435a24',
+                    backgroundColor: gradient,
+                    fill: true,
+                    borderWidth: 3,
+                    tension: 0.4,
+                    pointBackgroundColor: '#fff',
+                    pointBorderColor: '#435a24',
+                    pointRadius: 5,
+                    pointHoverRadius: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        display: false
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: {
+                            color: '#435a24',
+                            font: { size: 11, weight: '600' }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+<% } %>
 </body>
+
 </html>

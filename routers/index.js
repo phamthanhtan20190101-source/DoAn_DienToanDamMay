@@ -7,6 +7,7 @@ const baivanRoute = require('./baivan');
 const theloaiRoute = require('./theloai');   // Đã mở khóa
 const binhluanRoute = require('./binhluan'); // Đã mở khóa
 
+
 // 2. Gắn kết chúng vào hệ thống
 router.use('/', taikhoanRoute);
 router.use('/', baivanRoute);

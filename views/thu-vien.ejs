@@ -43,11 +43,34 @@
         .page-container { padding: 2rem 3rem; padding-top: 100px; max-width: 1300px; margin: 0 auto; }
         .hero-title { font-family: 'Judson', serif; font-weight: 700; color: var(--primary-color); font-size: 2.5rem; margin-bottom: 2rem; }
 
-        .category-nav { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 15px; margin-bottom: 30px; border-bottom: 1px solid rgba(67, 90, 36, 0.1); scrollbar-width: none; }
-        .category-nav::-webkit-scrollbar { display: none; }
-        .category-item { padding: 8px 20px; border-radius: 50px; background: var(--white); color: var(--primary-color); text-decoration: none; font-weight: 600; font-size: 0.9rem; border: 1px solid var(--primary-color); transition: 0.3s; white-space: nowrap; }
-        .category-item:hover, .category-item.active { background: var(--primary-color); color: var(--white); }
-
+        /* Cho phép tự động xuống dòng thể loại ở tv với flex-wrap */
+        .category-nav { 
+            display: flex; 
+            flex-wrap: wrap; /* Lệnh cực kỳ quan trọng để rớt dòng */
+            gap: 12px; 
+            padding-bottom: 15px; 
+            margin-bottom: 30px; 
+            border-bottom: 1px solid rgba(67, 90, 36, 0.1); 
+        }
+        
+        /* Bỏ đi lệnh ẩn scrollbar vì giờ không cuộn ngang nữa */
+        
+        .category-item { 
+            padding: 8px 20px; 
+            border-radius: 50px; 
+            background: var(--white); 
+            color: var(--primary-color); 
+            text-decoration: none; 
+            font-weight: 600; 
+            font-size: 0.9rem; 
+            border: 1px solid var(--primary-color); 
+            transition: 0.3s; 
+            white-space: nowrap; /* Giữ nguyên dòng này để chữ trong nút không bị gãy làm đôi */
+        }
+        .category-item:hover, .category-item.active { 
+            background: var(--primary-color); 
+            color: var(--white); 
+        }
         /* GRID CHIA CỘT CHUẨN */
         .library-grid { 
             display: grid; 
