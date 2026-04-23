@@ -114,4 +114,58 @@ router.get('/admin/xoa-tai-khoan/:id', checkAdmin, async (req, res) => {
     }
 });
 
+// Hiển thị trang Hồ sơ cá nhân
+router.get('/ho-so', async (req, res) => {
+    // Nếu chưa đăng nhập thì đuổi về trang đăng nhập
+    if (!req.session.user) return res.redirect('/dang-nhap');
+    
+    try {
+        // Tìm thông tin mới nhất của user từ Database
+        const user = await TaiKhoan.findById(req.session.user._id);
+        
+        res.render('ho-so', { 
+            user: user,
+            titlePage: 'Hồ Sơ Cá Nhân' 
+        });
+    } catch (err) {
+        res.status(500).send('Lỗi tải hồ sơ: ' + err.message);
+    }
+});
+
+    // API: Xử lý Đổi mật khẩu
+router.post('/api/doi-mat-khau', async (req, res) => {
+    if (!req.session.user) return res.json({ success: false, msg: 'Vui lòng đăng nhập lại!' });
+    
+    try {
+        const { matKhauCu, matKhauMoi } = req.body;
+        const user = await TaiKhoan.findById(req.session.user._id);
+
+        if (!user) return res.json({ success: false, msg: 'Tài khoản không tồn tại!' });
+
+        // 1. Kiểm tra mật khẩu cũ (Giống logic lúc đăng nhập)
+        let isMatch = await bcrypt.compare(matKhauCu, user.MatKhau);
+        // Hỗ trợ trường hợp tài khoản cũ có mật khẩu chưa băm
+        if (!isMatch && matKhauCu === user.MatKhau) {
+            isMatch = true; 
+        }
+
+        if (!isMatch) {
+            return res.json({ success: false, msg: 'Mật khẩu hiện tại không chính xác!' });
+        }
+
+        if (matKhauMoi.length < 6) {
+            return res.json({ success: false, msg: 'Mật khẩu mới phải có ít nhất 6 ký tự!' });
+        }
+
+        // 2. Băm mật khẩu mới cho an toàn rồi lưu vào Database
+        const salt = await bcrypt.genSalt(10);
+        user.MatKhau = await bcrypt.hash(matKhauMoi, salt);
+        await user.save();
+
+        res.json({ success: true, msg: 'Đổi mật khẩu thành công!' });
+    } catch (err) {
+        res.json({ success: false, msg: 'Lỗi máy chủ: ' + err.message });
+    }
+});
+
 module.exports = router;

@@ -78,13 +78,14 @@ router.get('/', async (req, res) => {
             .limit(5); // Chỉ lấy 5 bài
 
         res.render('home', { 
+            
             danhSachBanner, 
             baiVietTheoChuDe,
             danhSachBai, // Gửi thêm list cũ đề phòng
             topBaiViet, // Gửi danh sách top bài viết
             user: req.session.user, 
             isTuSach: false,
-            titlePage: 'Khám Phá Trạm Văn' 
+            titlePage: 'Tác Phẩm Nổi Bật' 
         }); 
     } catch (err) {
         res.status(500).send('Lỗi tải trang chủ: ' + err.message);
@@ -237,7 +238,7 @@ router.get('/gui-bai', async (req, res) => {
     if (!req.session.user) return res.redirect('/dang-nhap');
     try {
         const danhSachTheLoai = await TheLoai.find().sort({ TenTheLoai: 1 });
-        res.render('index', { danhSachTheLoai, user: req.session.user }); 
+        res.render('index', { titlePage: 'Gửi Bài Viết', danhSachTheLoai, user: req.session.user });
     } catch (err) {
         res.status(500).send('Lỗi tải trang gửi bài: ' + err.message);
     }
@@ -373,9 +374,10 @@ router.get('/bai-da-dang', async (req, res) => {
 
         // 3. Trả về giao diện
         res.render('bai-da-dang', { 
+            
             danhSachBai, 
             user: req.session.user,
-            titlePage: 'Bài Viết Của Tôi' 
+           titlePage: 'Bài Đã Đăng' 
         });
     } catch (err) {
         res.status(500).send('Lỗi: ' + err.message);

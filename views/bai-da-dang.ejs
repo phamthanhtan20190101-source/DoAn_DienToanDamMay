@@ -1,21 +1,21 @@
 <%- include('partials/header') %>
 
-<main class="container mt-5 pt-5">
+<div class="page-container">
     <div class="row mb-4 align-items-center">
         <div class="col-md-6">
-            <h2 class="fw-bold text-success">
+            <h2 class="fw-bold text-success" style="font-family: 'Judson', serif;">
                 <i class="bi bi-collection-play me-2"></i>Bài viết của tôi
             </h2>
             <p class="text-muted">Theo dõi và quản lý các tác phẩm Vy đã đóng góp cho Trạm Văn</p>
         </div>
         <div class="col-md-6 text-md-end">
-            <a href="/gui-bai" class="btn btn-success rounded-pill px-4 shadow-sm">
+            <a href="/gui-bai" class="btn btn-auth-solid rounded-pill px-4 shadow-sm">
                 <i class="bi bi-pencil-square me-2"></i>Gửi bài mới
             </a>
         </div>
     </div>
 
-    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden" style="background: white;">
         <div class="card-body p-0">
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0">
@@ -30,54 +30,44 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <% if (danhSachBai && danhSachBai.length > 0) { %>
+                        <% if (typeof danhSachBai !== 'undefined' && danhSachBai.length > 0) { %>
                             <% danhSachBai.forEach(bai => { %>
                                 <tr>
                                     <td class="ps-4">
                                         <div class="fw-bold text-dark"><%= bai.TieuDe %></div>
-                                        <small class="text-muted text-truncate d-block" style="max-width: 250px;">
-                                            <%= bai.TomTat %>
-                                        </small>
+                                        <small class="text-muted text-truncate d-block" style="max-width: 250px;"><%= bai.TomTat %></small>
                                     </td>
                                     <td>
-                                        <span class="badge bg-light text-dark border"><%= bai.TheLoai_id ? bai.TheLoai_id.TenTheLoai : 'Tự do' %></span>
+                                        <span class="badge bg-success-subtle text-success border border-success-subtle">
+                                            <%= bai.TheLoai_id ? bai.TheLoai_id.TenTheLoai : 'Chưa phân loại' %>
+                                        </span>
                                     </td>
+                                    <td class="text-muted small">
+                                        <%= new Date(bai.NgayDang).toLocaleDateString('vi-VN') %>
+                                    </td>
+                                    <td><i class="bi bi-eye me-1"></i><%= bai.LuotXem || 0 %></td>
                                     <td>
-                                        <small><%= new Date(bai.NgayDang).toLocaleDateString('vi-VN') %></small>
-                                    </td>
-                                    <td class="text-center">
-                                        <i class="bi bi-eye text-primary me-1"></i><%= bai.LuotXem || 0 %>
-                                    </td>
-                                    <td>
-                                        <% if (bai.TrangThai === 'DaDuyet') { %>
-                                            <span class="badge rounded-pill bg-success-subtle text-success px-3">
-                                                <i class="bi bi-check-circle me-1"></i>Đã duyệt
-                                            </span>
-                                        <% } else if (bai.TrangThai === 'ChoDuyet') { %>
-                                            <span class="badge rounded-pill bg-warning-subtle text-warning px-3">
-                                                <i class="bi bi-clock-history me-1"></i>Đang chờ
-                                            </span>
+                                        <% if(bai.TrangThai === 'DaDuyet') { %>
+                                            <span class="badge rounded-pill bg-success">Đã duyệt</span>
+                                        <% } else if(bai.TrangThai === 'ChoDuyet') { %>
+                                            <span class="badge rounded-pill bg-warning text-dark">Đang chờ</span>
                                         <% } else { %>
-                                            <span class="badge rounded-pill bg-danger-subtle text-danger px-3">
-                                                <i class="bi bi-exclamation-triangle me-1"></i>Từ chối
-                                            </span>
+                                            <span class="badge rounded-pill bg-danger">Từ chối</span>
                                         <% } %>
                                     </td>
                                     <td class="text-center pe-4">
-                                        <div class="btn-group">
-                                            <a href="/bai-van/<%= bai._id %>" class="btn btn-sm btn-outline-success">
-                                                <i class="bi bi-box-arrow-up-right"></i>
-                                            </a>
-                                            </div>
+                                        <a href="/bai-van/<%= bai._id %>" class="btn btn-sm btn-outline-success rounded-circle">
+                                            <i class="bi bi-box-arrow-up-right"></i>
+                                        </a>
                                     </td>
                                 </tr>
                             <% }) %>
                         <% } else { %>
                             <tr>
                                 <td colspan="6" class="text-center py-5">
-                                    <img src="https://cdn-icons-png.flaticon.com/512/7486/7486744.png" width="80" class="mb-3 opacity-50">
-                                    <p class="text-muted">Vy chưa đăng bài nào hết trơn. Bắt đầu sáng tác ngay nhé!</p>
-                                    <a href="/gui-bai" class="btn btn-sm btn-success">Gửi bài đầu tiên</a>
+                                    <i class="bi bi-journal-x fs-1 text-muted opacity-50"></i>
+                                    <p class="text-muted mt-3">Vy chưa đăng bài nào hết trơn. Bắt đầu sáng tác ngay nhé!</p>
+                                    <a href="/gui-bai" class="btn btn-success btn-sm rounded-pill">Gửi bài đầu tiên</a>
                                 </td>
                             </tr>
                         <% } %>
@@ -86,13 +76,6 @@
             </div>
         </div>
     </div>
-</main>
-
-<style>
-    .bg-success-subtle { background-color: #e1f7e5 !important; }
-    .bg-warning-subtle { background-color: #fff9e6 !important; }
-    .bg-danger-subtle { background-color: #ffe6e6 !important; }
-    .table-hover tbody tr:hover { background-color: #f8fdf9; }
-</style>
+</div>
 
 <%- include('partials/footer') %>

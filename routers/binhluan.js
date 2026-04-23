@@ -87,4 +87,18 @@ router.get('/admin/xoa-binh-luan/:id', checkAdmin, async (req, res) => {
     }
 });
 
+router.post('/api/doc-thong-bao', async (req, res) => {
+    try {
+        if (!req.session.user) return res.json({ success: false });
+        // Cập nhật trạng thái thông báo của user này trong Database
+        await ThongBao.updateMany(
+            { TaiKhoan_id: req.session.user._id, DaDoc: false },
+            { $set: { DaDoc: true } }
+        );
+        res.json({ success: true });
+    } catch (err) {
+        res.json({ success: false });
+    }
+});
+
 module.exports = router;
