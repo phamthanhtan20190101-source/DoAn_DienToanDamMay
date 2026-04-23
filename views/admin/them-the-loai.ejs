@@ -111,7 +111,18 @@
                         <tr>
                             <td><span class="badge bg-success"><%= tl.TenTheLoai %></span></td>
                             <td class="text-muted"><%= tl.MoTa %></td>
-                            <td><a href="/admin/xoa-the-loai/<%= tl._id %>" class="btn btn-sm btn-outline-danger" onclick="return confirm('Xóa?')">Xóa</a></td>
+                            <td>
+                                <div class="d-flex gap-2">
+                                    <a href="/admin/sua-the-loai/<%= tl._id %>" class="btn btn-sm btn-outline-primary" title="Sửa thể loại">
+                                        <i class="bi bi-pencil-square"></i>
+                                    </a>
+                            
+                                    <a href="/admin/xoa-the-loai/<%= tl._id %>" class="btn btn-sm btn-outline-danger" title="Xóa thể loại"
+                                        onclick="return confirm('Bạn có chắc chắn muốn xóa thể loại này không?');">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </div>
+                            </td>
                         </tr>
                     <% }) %>
                 </tbody>

@@ -83,8 +83,15 @@
                             <td><%= new Date(bai.NgayDang).toLocaleDateString('vi-VN') %></td>
                             <td>
                                 <div class="d-flex gap-2">
-                                    <a href="<%= bai.WebViewLink || '#' %>" target="_blank" class="btn btn-sm btn-outline-primary"><i class="bi bi-eye"></i></a>
-                                    <a href="/admin/xoa-bai/<%= bai._id %>" class="btn btn-sm btn-outline-danger" onclick="return confirm('Bạn có chắc muốn xóa vĩnh viễn bài này?')"><i class="bi bi-trash"></i></a>
+                                    <a href="/bai-van/<%= bai._id %>" target="_blank" class="btn btn-sm btn-outline-primary"
+                                        title="Xem trước bài viết">
+                                        <i class="bi bi-eye"></i>
+                                    </a>
+                            
+                                    <a href="/admin/xoa-bai/<%= bai._id %>" class="btn btn-sm btn-outline-danger" title="Xóa bài viết"
+                                        onclick="return confirm('Bạn có chắc chắn muốn xóa bài viết này không?');">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
                                 </div>
                             </td>
                         </tr>

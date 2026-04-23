@@ -10,6 +10,7 @@ const TaiKhoan = require('../models/taikhoan');
 const TheLoai = require('../models/theloai');
 const YeuThich = require('../models/yeuthich');
 const LichSu = require('../models/lichsu');
+const ChuDe = require('../models/chude');
 
 // 1. CẤU HÌNH UPLOAD & GOOGLE DRIVE
 const upload = multer({ dest: 'uploads/' });
@@ -191,6 +192,7 @@ router.get('/gui-bai', async (req, res) => {
     }
 });
 
+
 // Xử lý upload file lên Drive & Database - Trả về JSON cho Toast notification
 router.post('/upload', upload.single('essayFile'), async (req, res) => {
     try {
@@ -256,7 +258,45 @@ const checkAdmin = (req, res, next) => {
         res.status(403).send('Cấm truy cập: Bạn không có quyền quản trị.');
     }
 };
+// ==========================================
+// QUẢN LÝ CHỦ ĐỀ (Góc chữa lành, Sĩ tử 12...)
+// ==========================================
 
+// 1. Hiển thị trang Quản lý Chủ đề
+router.get('/admin/quan-ly-chu-de', checkAdmin, async (req, res) => {
+    try {
+        const danhSachChuDe = await ChuDe.find().sort({ createdAt: -1 });
+        res.render('admin/quan-ly-chu-de', { 
+            danhSachChuDe, 
+            user: req.session.user, 
+            error: null 
+        });
+    } catch (err) { 
+        res.status(500).send('Lỗi: ' + err.message); 
+    }
+});
+
+// 2. Xử lý Thêm Chủ đề mới
+router.post('/admin/them-chu-de', checkAdmin, async (req, res) => {
+    try {
+        const { TenChuDe, MoTa } = req.body;
+        const newChuDe = new ChuDe({ TenChuDe, MoTa });
+        await newChuDe.save();
+        res.redirect('/admin/quan-ly-chu-de');
+    } catch (err) { 
+        res.status(500).send('Lỗi thêm chủ đề: ' + err.message); 
+    }
+});
+
+// 3. Xử lý Xóa Chủ đề
+router.get('/admin/xoa-chu-de/:id', checkAdmin, async (req, res) => {
+    try {
+        await ChuDe.findByIdAndDelete(req.params.id);
+        res.redirect('/admin/quan-ly-chu-de');
+    } catch (err) { 
+        res.status(500).send('Lỗi xóa chủ đề: ' + err.message); 
+    }
+});
 // Dashboard Thống kê
 router.get('/admin/dashboard', checkAdmin, async (req, res) => {
     try {

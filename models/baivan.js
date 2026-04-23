@@ -4,6 +4,8 @@ const essaySchema = new mongoose.Schema({
     TieuDe: { type: String, required: true },
     TomTat: { type: String },
     TheLoai_id: { type: mongoose.Schema.Types.ObjectId, ref: 'theloai', required: true },
+    //Mảng các Chủ đề (Có thể chọn nhiều - ví dụ: Góc chữa lành, Sĩ tử 12)
+    ChuDe_id: [{ type: mongoose.Schema.Types.ObjectId, ref: 'ChuDe' }],
     TacGia_id: { type: mongoose.Schema.Types.ObjectId, ref: 'taikhoan', required: true },
     DriveFileId: { type: String, required: true },
     WebViewLink: { type: String },
