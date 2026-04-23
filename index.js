@@ -16,6 +16,7 @@ const ThongBao = require('./models/thongbao');
 const appRoutes = require('./routers'); 
 
 const app = express();
+
 // Cấp quyền truy cập công khai cho thư mục 'public'
 app.use(express.static('public'));
 const port = 3000;
@@ -32,23 +33,31 @@ app.use(session({
     cookie: { maxAge: 1000 * 60 * 60 * 24 } // Hiệu lực trong 1 ngày
 }));
 
-// Biến toàn cục để các file EJS nhận diện người dùng và tự động lấy thông báo
+// MIDDLEWARE TỔNG HỢP: Cấu hình Footer, User và Thông báo
 app.use(async (req, res, next) => {
-    res.locals.user = req.session.user || null;
-    
-    // Nếu có người dùng đăng nhập, tự động lấy thông báo cho họ
-    if (req.session.user) {
-        try {
-            // Lấy 5 thông báo mới nhất
+    try {
+        // 1. Lấy cấu hình Footer (globalConfig)
+        const CauHinh = require('./models/cauhinh');
+        let config = await CauHinh.findOne();
+        if (!config) config = await CauHinh.create({}); 
+        res.locals.globalConfig = config;
+
+        // 2. Nhận diện người dùng cho toàn bộ các trang EJS
+        res.locals.user = req.session.user || null;
+        
+        // 3. Tự động lấy thông báo nếu có người dùng đăng nhập
+        if (req.session.user) {
             res.locals.thongBaoList = await ThongBao.find({ TaiKhoan_id: req.session.user._id })
                                             .sort({ NgayTao: -1 }).limit(5);
-            // Đếm số thông báo chưa đọc (để hiện số lên chấm đỏ)
             res.locals.thongBaoChuaDoc = await ThongBao.countDocuments({ TaiKhoan_id: req.session.user._id, DaDoc: false });
-        } catch (err) {
+        } else {
             res.locals.thongBaoList = [];
             res.locals.thongBaoChuaDoc = 0;
         }
-    } else {
+    } catch (err) {
+        console.error("Lỗi hệ thống Middleware:", err);
+        res.locals.globalConfig = {};
+        res.locals.user = null;
         res.locals.thongBaoList = [];
         res.locals.thongBaoChuaDoc = 0;
     }

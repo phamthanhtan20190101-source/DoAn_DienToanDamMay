@@ -1,28 +1,79 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <title>Quản Lý Người Dùng - Trạm Văn Admin</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <style>
-        :root { --primary-color: #435a24; --bg-color: #eef7e8; --sidebar-bg: #a8d08d; }
-        body { background: var(--bg-color); font-family: 'Inter', sans-serif; display: flex; margin: 0; min-height: 100vh; }
-        .main-content { flex-grow: 1; margin-left: 280px; padding: 40px; }
-        .table-card { background: white; border-radius: 15px; padding: 25px; box-shadow: 0 5px 20px rgba(0,0,0,0.05); }
+        :root {
+            --primary-color: #435a24;
+            --bg-color: #eef7e8;
+            --sidebar-bg: #a8d08d;
+        }
+
+        body {
+            background: var(--bg-color);
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            margin: 0;
+            min-height: 100vh;
+        }
+
+        .main-content {
+            flex-grow: 1;
+            margin-left: 280px;
+            padding: 40px;
+        }
+
+        .table-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+        }
     </style>
 </head>
+
 <body>
 
-    <div class="sidebar d-flex flex-column" style="width: 280px; background: var(--sidebar-bg); height: 100vh; position: fixed; padding: 20px; box-shadow: 2px 0 10px rgba(0,0,0,0.05); top: 0; left: 0;">
-        <a href="/admin/dashboard" class="sidebar-brand mb-4 text-decoration-none" style="color: var(--primary-color); font-weight: bold; font-size: 1.5rem; display: flex; align-items: center; gap: 10px;">
+    <div class="sidebar d-flex flex-column"
+        style="width: 280px; background: var(--sidebar-bg); height: 100vh; position: fixed; padding: 20px; box-shadow: 2px 0 10px rgba(0,0,0,0.05); top: 0; left: 0;">
+        <a href="/admin/dashboard" class="sidebar-brand mb-4 text-decoration-none"
+            style="color: var(--primary-color); font-weight: bold; font-size: 1.5rem; display: flex; align-items: center; gap: 10px;">
             <i class="bi bi-shield-check"></i> Trạm Văn Admin
         </a>
 
         <style>
-            .admin-group-label { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: rgba(67, 90, 36, 0.6); display: block; font-weight: 700; margin-top: 1.5rem; margin-bottom: 0.5rem; padding-left: 5px;}
-            .sidebar a { color: var(--primary-color); text-decoration: none; padding: 10px 15px; display: block; border-radius: 8px; font-weight: 500; transition: 0.3s; margin-bottom: 2px;}
-            .sidebar a:hover, .sidebar a.active { background: rgba(255,255,255,0.4); border-left: 4px solid var(--primary-color); }
+            .admin-group-label {
+                font-size: 0.75rem;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                color: rgba(67, 90, 36, 0.6);
+                display: block;
+                font-weight: 700;
+                margin-top: 1.5rem;
+                margin-bottom: 0.5rem;
+                padding-left: 5px;
+            }
+
+            .sidebar a {
+                color: var(--primary-color);
+                text-decoration: none;
+                padding: 10px 15px;
+                display: block;
+                border-radius: 8px;
+                font-weight: 500;
+                transition: 0.3s;
+                margin-bottom: 2px;
+            }
+
+            .sidebar a:hover,
+            .sidebar a.active {
+                background: rgba(255, 255, 255, 0.4);
+                border-left: 4px solid var(--primary-color);
+            }
         </style>
 
         <div style="flex-grow: 1; overflow-y: auto;">
@@ -44,7 +95,8 @@
         </div>
 
         <div class="mt-auto pt-3 border-top" style="border-color: rgba(67, 90, 36, 0.15) !important;">
-            <a href="/" class="btn w-100 shadow-sm" style="background-color: var(--primary-color); color: white; border-radius: 10px; font-weight: 600; padding: 12px; display: flex; align-items: center; justify-content: center;">
+            <a href="/" class="btn w-100 shadow-sm"
+                style="background-color: var(--primary-color); color: white; border-radius: 10px; font-weight: 600; padding: 12px; display: flex; align-items: center; justify-content: center;">
                 <i class="bi bi-house-door me-2"></i> Trở Về Trang Chủ
             </a>
         </div>
@@ -53,7 +105,8 @@
     <div class="main-content">
         <div class="d-flex justify-content-between align-items-center mb-4">
             <h2 style="color: var(--primary-color); font-weight: 700;">Danh Sách Người Dùng</h2>
-            <span class="text-muted">Tổng cộng: <%= typeof danhSachNguoiDung !== 'undefined' ? danhSachNguoiDung.length : 0 %> tài khoản</span>
+            <span class="text-muted">Tổng cộng: <%= typeof danhSachNguoiDung !=='undefined' ? danhSachNguoiDung.length :
+                    0 %> tài khoản</span>
         </div>
 
         <div class="table-card">
@@ -68,62 +121,94 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <% if (typeof danhSachNguoiDung !== 'undefined' && danhSachNguoiDung.length > 0) { %>
-                        <% danhSachNguoiDung.forEach(nd => { %>
+                    <% if (typeof danhSachNguoiDung !=='undefined' && danhSachNguoiDung.length> 0) { %>
+                        <% danhSachNguoiDung.forEach(nd=> { %>
                             <tr>
                                 <td>
                                     <div class="d-flex align-items-center gap-3">
-                                        <div class="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold" style="width: 40px; height: 40px; background-color: var(--primary-color);">
+                                        <div class="rounded-circle d-flex align-items-center justify-content-center text-white fw-bold"
+                                            style="width: 40px; height: 40px; background-color: var(--primary-color);">
                                             <%= nd.HoTen.charAt(0).toUpperCase() %>
                                         </div>
-                                        <strong><%= nd.HoTen %></strong>
+                                        <strong>
+                                            <%= nd.HoTen %>
+                                        </strong>
                                     </div>
                                 </td>
-                                <td class="text-muted">@<%= nd.TenDangNhap %></td>
-                                <td>
-                                    <% if (nd.QuyenHan === 'admin') { %>
-                                        <span class="badge bg-danger">Admin</span>
-                                    <% } else { %>
-                                        <span class="badge bg-secondary">Người dùng</span>
-                                    <% } %>
+                                <td class="text-muted">@<%= nd.TenDangNhap %>
                                 </td>
                                 <td>
-                                    <% if (nd.KichHoat === 1) { %>
-                                        <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1"><i class="bi bi-check-circle me-1"></i> Hoạt động</span>
-                                    <% } else { %>
-                                        <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-1"><i class="bi bi-lock me-1"></i> Bị khóa</span>
-                                    <% } %>
+                                    <% if (nd.QuyenHan==='admin' ) { %>
+                                        <span class="badge bg-danger">Admin</span>
+                                        <% } else { %>
+                                            <span class="badge bg-secondary">Người dùng</span>
+                                            <% } %>
+                                </td>
+                                <td>
+                                    <% if (nd.KichHoat===1) { %>
+                                        <span
+                                            class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1"><i
+                                                class="bi bi-check-circle me-1"></i> Hoạt động</span>
+                                        <% } else { %>
+                                            <span
+                                                class="badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-1"><i
+                                                    class="bi bi-lock me-1"></i> Bị khóa</span>
+                                            <% } %>
                                 </td>
                                 <td>
                                     <div class="d-flex gap-2">
-                                        <% if (nd.KichHoat === 1) { %>
-                                            <a href="/admin/khoa-tai-khoan/<%= nd._id %>" class="btn btn-sm btn-outline-warning" title="Khóa tài khoản">
-                                                <i class="bi bi-lock-fill"></i> Khóa
-                                            </a>
-                                        <% } else { %>
-                                            <a href="/admin/khoa-tai-khoan/<%= nd._id %>" class="btn btn-sm btn-outline-success" title="Mở khóa tài khoản">
-                                                <i class="bi bi-unlock-fill"></i> Mở
-                                            </a>
-                                        <% } %>
 
-                                        <a href="/admin/xoa-tai-khoan/<%= nd._id %>" class="btn btn-sm btn-outline-danger" title="Xóa tài khoản" onclick="return confirm('Hành động này sẽ xóa vĩnh viễn tài khoản. Bạn có chắc chắn không?');">
-                                            <i class="bi bi-trash"></i>
-                                        </a>
+                                        <% if (nd.QuyenHan !=='admin' ) { %>
+                                            <a href="/admin/cap-quyen-admin/<%= nd._id %>"
+                                                class="btn btn-sm btn-outline-success" title="Cấp quyền Admin"
+                                                onclick="return confirm('Bạn có chắc chắn muốn cấp quyền Admin cho người dùng này?');">
+                                                <i class="bi bi-shield-arrow-up"></i> Lên Admin
+                                            </a>
+                                            <% } else { %>
+                                                <a href="/admin/ha-quyen-admin/<%= nd._id %>"
+                                                    class="btn btn-sm btn-outline-secondary"
+                                                    title="Hạ quyền xuống Người dùng"
+                                                    onclick="return confirm('Hạ quyền người này xuống thành viên thường?');">
+                                                    <i class="bi bi-shield-arrow-down"></i> Bỏ Admin
+                                                </a>
+                                                <% } %>
+
+                                                    <% if (nd.KichHoat===1) { %>
+                                                        <a href="/admin/khoa-tai-khoan/<%= nd._id %>"
+                                                            class="btn btn-sm btn-outline-warning"
+                                                            title="Khóa tài khoản">
+                                                            <i class="bi bi-lock-fill"></i> Khóa
+                                                        </a>
+                                                        <% } else { %>
+                                                            <a href="/admin/khoa-tai-khoan/<%= nd._id %>"
+                                                                class="btn btn-sm btn-outline-success"
+                                                                title="Mở khóa tài khoản">
+                                                                <i class="bi bi-unlock-fill"></i> Mở
+                                                            </a>
+                                                            <% } %>
+
+                                                                <a href="/admin/xoa-tai-khoan/<%= nd._id %>"
+                                                                    class="btn btn-sm btn-outline-danger"
+                                                                    title="Xóa tài khoản"
+                                                                    onclick="return confirm('Hành động này sẽ xóa vĩnh viễn tài khoản. Bạn có chắc chắn không?');">
+                                                                    <i class="bi bi-trash"></i>
+                                                                </a>
                                     </div>
                                 </td>
                             </tr>
-                        <% }) %>
-                    <% } else { %>
-                        <tr>
-                            <td colspan="5" class="text-center py-5 text-muted">
-                                <i class="bi bi-people fs-1 d-block mb-3"></i>
-                                Chưa có người dùng nào đăng ký.
-                            </td>
-                        </tr>
-                    <% } %>
+                            <% }) %>
+                                <% } else { %>
+                                    <tr>
+                                        <td colspan="5" class="text-center py-5 text-muted">
+                                            <i class="bi bi-people fs-1 d-block mb-3"></i>
+                                            Chưa có người dùng nào đăng ký.
+                                        </td>
+                                    </tr>
+                                    <% } %>
                 </tbody>
             </table>
         </div>
     </div>
 </body>
+
 </html>

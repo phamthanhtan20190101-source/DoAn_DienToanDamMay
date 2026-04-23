@@ -1,0 +1,127 @@
+<%- include('partials/header') %>
+
+<div class="content-wrapper p-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            
+            <div class="text-center mb-4 mt-2">
+                <h1 class="fw-bold display-5" style="font-family: 'Judson', serif; color: var(--primary-color);">
+                    Góc Cảm Nhận
+                </h1>
+                <p class="text-muted fst-italic fs-6 mt-2">
+                    "Trạm dừng chân của những tâm hồn yêu văn chương, nơi mọi cảm xúc đều được lắng nghe..."
+                </p>
+            </div>
+
+            <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 pb-3 border-bottom">
+                <ul class="nav nav-pills gap-2 mb-2 mb-md-0">
+                    <li class="nav-item">
+                        <a class="nav-link active rounded-pill px-4 shadow-sm" href="#" style="background-color: var(--primary-color);">Mới nhất</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-muted rounded-pill px-4 bg-white border" href="#">Đang chú ý <i class="bi bi-fire text-danger"></i></a>
+                    </li>
+                </ul>
+                <a href="/gui-bai" class="btn btn-success rounded-pill px-4 shadow-sm" style="background-color: var(--primary-color);">
+                    <i class="bi bi-pencil-square me-2"></i>Tạo bài viết
+                </a>
+            </div>
+
+            <div class="d-flex flex-column gap-4">
+                <% if (typeof danhSachCamNhan !== 'undefined' && danhSachCamNhan.length > 0) { %>
+                    <% danhSachCamNhan.forEach(bai => { %>
+                        <div class="card border-0 shadow-sm rounded-4 overflow-hidden forum-card" style="background: white;">
+                            <div class="card-body p-4">
+                                
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <div class="d-flex align-items-center gap-3">
+                                        <div class="avatar bg-success text-white rounded-circle d-flex align-items-center justify-content-center fw-bold fs-5 shadow-sm" style="width: 48px; height: 48px;">
+                                            <%= bai.TacGia_id ? bai.TacGia_id.HoTen.charAt(0).toUpperCase() : 'V' %>
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-0 fw-bold text-dark">
+                                                <%= bai.TacGia_id ? bai.TacGia_id.HoTen : 'Bạn đọc ẩn danh' %>
+                                            </h6>
+                                            <small class="text-muted d-flex align-items-center gap-1">
+                                                <%= new Date(bai.NgayDang).toLocaleDateString('vi-VN') %> • 
+                                                <i class="bi bi-globe-americas"></i> Công khai
+                                            </small>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-light rounded-circle p-2 text-muted border-0"><i class="bi bi-three-dots"></i></button>
+                                </div>
+
+                                <a href="/bai-van/<%= bai._id %>" class="text-decoration-none">
+                                    <h4 class="fw-bold mb-2 text-dark hover-title" style="line-height: 1.4;">
+                                        <%= bai.TieuDe %>
+                                    </h4>
+                                    <p class="text-secondary mb-3" style="line-height: 1.6; font-size: 0.95rem;">
+                                        <%= bai.TomTat ? bai.TomTat : 'Một chút tản mạn chưa được tóm tắt. Nhấn để đọc trọn vẹn những dòng cảm xúc này...' %>
+                                    </p>
+                                </a>
+
+                                <div class="mb-3">
+                                    <span class="badge rounded-pill fw-medium px-3 py-2" style="background-color: var(--bg-color); color: var(--primary-color);">
+                                        # <%= bai.TheLoai_id ? bai.TheLoai_id.TenTheLoai : 'Tản mạn' %>
+                                    </span>
+                                </div>
+
+                                <hr class="my-3 opacity-10">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="d-flex gap-4">
+                                        <button class="btn btn-link text-muted text-decoration-none p-0 d-flex align-items-center gap-2 hover-action">
+                                            <i class="bi bi-heart fs-5"></i> 
+                                            <span class="fw-medium"><%= bai.LuotXem || 0 %></span>
+                                        </button>
+                                        <a href="/bai-van/<%= bai._id %>#binh-luan" class="btn btn-link text-muted text-decoration-none p-0 d-flex align-items-center gap-2 hover-action">
+                                            <i class="bi bi-chat-text fs-5"></i> 
+                                            <span class="fw-medium">Thảo luận</span>
+                                        </a>
+                                    </div>
+                                    <a href="/bai-van/<%= bai._id %>" class="btn btn-outline-success rounded-pill px-4 btn-sm fw-bold">
+                                        Đọc tiếp <i class="bi bi-arrow-right ms-1"></i>
+                                    </a>
+                                </div>
+
+                            </div>
+                        </div>
+                    <% }) %>
+                <% } else { %>
+                    <div class="text-center py-5 bg-white rounded-4 shadow-sm border-0">
+                        <i class="bi bi-chat-quote display-1 text-muted opacity-25 mb-3 d-block"></i>
+                        <h4 class="fw-bold text-dark">Diễn đàn đang vắng vẻ</h4>
+                        <p class="text-muted mb-4">Hãy là người đầu tiên chia sẻ cảm nhận của mình lên Trạm Văn nhé!</p>
+                        <a href="/gui-bai" class="btn btn-success rounded-pill px-4 shadow-sm">Viết bài đầu tiên</a>
+                    </div>
+                <% } %>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Hiệu ứng nổi bật khi lướt chuột qua bài viết */
+    .forum-card { 
+        transition: transform 0.2s ease, box-shadow 0.2s ease; 
+        border: 1px solid rgba(0,0,0,0.05) !important;
+    }
+    .forum-card:hover { 
+        transform: translateY(-2px); 
+        box-shadow: 0 12px 30px rgba(67, 90, 36, 0.08) !important; 
+    }
+    
+    /* Đổi màu tiêu đề khi hover */
+    .hover-title { transition: color 0.2s ease; }
+    .forum-card:hover .hover-title { color: var(--primary-color) !important; }
+
+    /* Hiệu ứng các nút tương tác (Tim, Comment) */
+    .hover-action { transition: all 0.2s ease; }
+    .hover-action:hover { color: var(--primary-color) !important; }
+    .hover-action:hover i.bi-heart { content: "\F415"; /* Đổi thành tim đỏ/đặc */ color: #dc3545; }
+    
+    /* Giao diện thanh Tab */
+    .nav-pills .nav-link.active { box-shadow: 0 4px 10px rgba(67, 90, 36, 0.2); }
+</style>
+
+<%- include('partials/footer') %>

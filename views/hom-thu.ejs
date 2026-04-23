@@ -1,0 +1,67 @@
+<%- include('partials/header') %>
+
+<div class="content-wrapper p-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-7 col-md-9"> 
+            
+            <h2 class="fw-bold mb-4" style="color: var(--primary-color);">Hòm Thư Tâm Sự</h2>
+
+            <div class="card border-0 shadow-sm rounded-4 mb-4">
+                <div class="card-body p-4">
+                    <form action="/hom-thu" method="POST">
+                        <textarea name="NoiDung" class="form-control border-0 bg-light rounded-3 p-3 mb-3" 
+                                  rows="3" placeholder="Gửi gắm tâm tư của bạn ở đây nhé..." required 
+                                  style="resize: none;"></textarea>
+                        <div class="d-flex justify-content-end">
+                            <button type="submit" class="btn btn-success rounded-pill px-4 fw-bold shadow-sm" style="background-color: var(--primary-color);">Gửi</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <% if (danhSachThu && danhSachThu.length > 0) { %>
+                <% danhSachThu.forEach(thu => { %>
+                    <div class="card border-0 shadow-sm rounded-4 mb-3 card-hover">
+                        <div class="card-body p-4">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 45px; height: 45px;">
+                                    <i class="bi bi-person-fill fs-5"></i>
+                                </div>
+                                <div>
+                                    <h6 class="mb-0 fw-bold"><%= thu.MaAnDanh %></h6>
+                                    <small class="text-muted"><%= new Date(thu.NgayGui).toLocaleDateString('vi-VN') %></small>
+                                </div>
+                            </div>
+                            
+                            <p class="mb-4 text-dark" style="white-space: pre-wrap; line-height: 1.6;"><%= thu.NoiDung %></p>
+                            
+                            <div class="d-flex gap-4 border-top pt-3">
+                                <div class="text-muted action-btn">
+                                    <i class="bi bi-heart"></i> <span><%= thu.LuotThich %></span>
+                                </div>
+                                <div class="text-muted action-btn">
+                                    <i class="bi bi-chat-text"></i> <span>0</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                <% }) %>
+            <% } else { %>
+                <div class="text-center py-5">
+                    <p class="text-muted">Chưa có tâm sự nào. Hãy là người đầu tiên mở lời nhé!</p>
+                </div>
+            <% } %>
+
+        </div>
+    </div>
+</div>
+
+<style>
+    .card-hover { transition: transform 0.2s ease; }
+    .card-hover:hover { transform: translateY(-2px); }
+    .action-btn { cursor: pointer; transition: color 0.2s; }
+    .action-btn:hover { color: var(--primary-color) !important; font-weight: bold; }
+    .action-btn:hover i.bi-heart { content: "\F415"; /* Đổi thành tim đặc khi hover (tùy chọn) */ }
+</style>
+
+<%- include('partials/footer') %>

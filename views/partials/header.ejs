@@ -449,6 +449,38 @@
             box-shadow: 0 10px 25px rgba(67, 90, 36, 0.1);
             background-color: #fcfdfa;
         }
+
+        /* --- SỬA LỖI BỊ SIDEBAR CHE KHUẤT --- */
+        .main-content {
+            margin-left: 280px !important;
+            /* Đẩy nội dung sang phải 280px cho vừa khít Sidebar */
+            width: calc(100% - 280px) !important;
+            /* Bóp chiều rộng lại để không bị tràn ngang */
+            min-height: 100vh;
+            transition: margin-left 0.3s ease, width 0.3s ease;
+        }
+
+        .page-container {
+            padding: 120px 30px 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .page-container.page-container--tight-top {
+            padding-top: 70px !important;
+        }
+
+        /* Đảm bảo khi bấm nút thu gọn Sidebar thì nội dung giãn ra lại */
+        body.sidebar-hidden .main-content {
+            margin-left: 0 !important;
+            width: 100% !important;
+        }
+
+        /* Fix lỗi top-bar bị tràn nếu có */
+        .top-bar {
+            width: 100%;
+            z-index: 10;
+        }
     </style>
 </head>
 
@@ -473,7 +505,9 @@
                     <i class="bi bi-grid-1x2"></i> Thư Viện Tài Liệu
                 </a>
 
-                <a href="#"><i class="bi bi-chat-heart"></i> Góc Cảm Nhận</a>
+                <a href="/cam-nhan" class="nav-link-custom <%= (typeof titlePage !== 'undefined' && titlePage === 'Góc Cảm Nhận') ? 'active' : '' %>">
+                <i class="bi bi-chat-heart"></i> Góc Cảm Nhận
+                </a>
 
                 <span class="menu-label mt-4">Cá nhân</span>
 
@@ -510,7 +544,7 @@
                     style="border-color: rgba(67, 90, 36, 0.15) !important; padding: 0 20px 20px 20px;">
                     <a href="/admin/dashboard" class="btn w-100 shadow-sm"
                         style="background-color: var(--primary-color); color: white; border-radius: 10px; font-weight: 600; padding: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 0;">
-                        <i class="bi bi-shield-lock me-2"></i> Quản Trị
+                        <i class="bi bi-shield-lock me-2"></i> Vào Trang Quản Trị
                     </a>
                 </div>
                 <% } %>
@@ -522,40 +556,62 @@
             <button id="sidebarToggle" class="toggle-btn">
                 <i class="bi bi-list"></i> Menu
             </button>
+
+            <form action="/tim-kiem" method="GET" class="d-flex flex-grow-1 mx-md-4" style="max-width: 500px;">
+                <div class="input-group shadow-sm" style="border-radius: 20px; overflow: hidden;">
+                    <input type="text" name="q" class="form-control border-0 bg-light px-4" placeholder="Tìm kiếm tựa bài, tóm tắt..." required style="box-shadow: none;">
+                    <button class="btn text-white px-4" type="submit" style="background-color: var(--primary-color);"><i class="bi bi-search"></i></button>
+                </div>
+            </form>
+
             <% if (typeof user !=='undefined' && user) { %>
                 <div class="d-flex align-items-center gap-3">
 
-<div class="dropdown">
-                        <button id="btnThongBao" class="icon-btn-dark position-relative border-0 dropdown-toggle-hide-arrow" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="Thông báo">
+                    <div class="dropdown">
+                        <button id="btnThongBao"
+                            class="icon-btn-dark position-relative border-0 dropdown-toggle-hide-arrow" type="button"
+                            data-bs-toggle="dropdown" aria-expanded="false" title="Thông báo">
                             <i class="bi bi-bell-fill"></i>
-                            <% if (typeof thongBaoChuaDoc !=='undefined' && thongBaoChuaDoc > 0) { %>
-                                <span id="badgeThongBao" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" style="font-size: 0.65rem; transform: translate(-35%, 25%) !important;">
+                            <% if (typeof thongBaoChuaDoc !=='undefined' && thongBaoChuaDoc> 0) { %>
+                                <span id="badgeThongBao"
+                                    class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+                                    style="font-size: 0.65rem; transform: translate(-35%, 25%) !important;">
                                     <%= thongBaoChuaDoc %>
                                 </span>
-                            <% } %>
+                                <% } %>
                         </button>
-                        
-                        <div class="dropdown-menu dropdown-menu-end shadow border-0 mt-3 rounded-4" style="width: 320px; padding: 0; overflow: hidden;">
+
+                        <div class="dropdown-menu dropdown-menu-end shadow border-0 mt-3 rounded-4"
+                            style="width: 320px; padding: 0; overflow: hidden;">
                             <div class="px-4 py-3 bg-light border-bottom">
                                 <strong class="text-dark">Thông báo của bạn</strong>
                             </div>
                             <div style="max-height: 400px; overflow-y: auto;">
-                                <% if (typeof thongBaoList !=='undefined' && thongBaoList.length > 0) { %>
-                                    <% thongBaoList.forEach(tb => { %>
-                                        <a class="dropdown-item py-3 px-4 border-bottom text-wrap <%= tb.DaDoc ? '' : 'bg-light fw-medium' %>" href="#" style="font-size: 0.9rem; line-height: 1.5;">
-                                            <i class="bi <%= tb.TieuDe === 'Cảnh báo vi phạm' ? 'bi-exclamation-triangle-fill text-danger' : 'bi-bell-fill text-primary' %> me-2"></i>
-                                            <strong><%= tb.TieuDe %>:</strong> <%= tb.NoiDung %>
-                                            <div class="text-muted small mt-1"><%= new Date(tb.NgayTao).toLocaleString('vi-VN') %></div>
+                                <% if (typeof thongBaoList !=='undefined' && thongBaoList.length> 0) { %>
+                                    <% thongBaoList.forEach(tb=> { %>
+                                        <a class="dropdown-item py-3 px-4 border-bottom text-wrap <%= tb.DaDoc ? '' : 'bg-light fw-medium' %>"
+                                            href="#" style="font-size: 0.9rem; line-height: 1.5;">
+                                            <i
+                                                class="bi <%= tb.TieuDe === 'Cảnh báo vi phạm' ? 'bi-exclamation-triangle-fill text-danger' : 'bi-bell-fill text-primary' %> me-2"></i>
+                                            <strong>
+                                                <%= tb.TieuDe %>:
+                                            </strong>
+                                            <%= tb.NoiDung %>
+                                                <div class="text-muted small mt-1">
+                                                    <%= new Date(tb.NgayTao).toLocaleString('vi-VN') %>
+                                                </div>
                                         </a>
-                                    <% }) %>
-                                <% } else { %>
-                                    <div class="p-4 text-center text-muted small">
-                                        <i class="bi bi-inbox fs-3 d-block mb-2 opacity-50"></i> Bạn chưa có thông báo nào.
-                                    </div>
-                                <% } %>
+                                        <% }) %>
+                                            <% } else { %>
+                                                <div class="p-4 text-center text-muted small">
+                                                    <i class="bi bi-inbox fs-3 d-block mb-2 opacity-50"></i> Bạn chưa có
+                                                    thông báo nào.
+                                                </div>
+                                                <% } %>
                             </div>
                             <div class="border-top">
-                                <a class="dropdown-item text-center py-2 fw-bold text-muted small" href="#" style="background-color: #fcfdfa;">Xem tất cả</a>
+                                <a class="dropdown-item text-center py-2 fw-bold text-muted small" href="#"
+                                    style="background-color: #fcfdfa;">Xem tất cả</a>
                             </div>
                         </div>
                     </div>
@@ -575,7 +631,8 @@
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
-                            <li><a class="dropdown-item py-2" href="/ho-so"><i class="bi bi-person me-2"></i> Hồ sơ cá nhân</a></li>
+                            <li><a class="dropdown-item py-2" href="/ho-so"><i class="bi bi-person me-2"></i> Hồ sơ cá
+                                    nhân</a></li>
                             <li><a class="dropdown-item py-2 text-danger" href="/dang-xuat"><i
                                         class="bi bi-box-arrow-right me-2"></i> Đăng xuất</a></li>
                         </ul>
@@ -590,256 +647,5 @@
         </header>
         <% if (typeof isTuSach==='undefined' || !isTuSach) { %>
 
-            <% if (typeof danhSachBanner !=='undefined' && danhSachBanner.length> 0) { %>
-                <div id="bannerCarousel" class="carousel slide hero-banner mb-5" data-bs-ride="carousel">
-                    <div class="carousel-inner">
-                        <% danhSachBanner.forEach((banner, index)=> { %>
-                            <div class="carousel-item <%= index === 0 ? 'active' : '' %> banner-item"
-                                style="background-image: url('<%= banner.HinhAnh %>');">
-                                <div class="banner-overlay"></div>
-                                <div class="banner-content">
-                                    <h2 class="fw-bold mb-3" style="font-family: 'Judson', serif; font-size: 2.5rem;">
-                                        <%= banner.TieuDe %>
-                                    </h2>
-                                    <a href="<%= banner.DuongDan %>" class="btn px-4 py-2 rounded-pill fw-bold"
-                                        style="background-color: var(--primary-color); color: white; border:none;">Khám
-                                        phá ngay</a>
-                                </div>
-                            </div>
-                            <% }) %>
-                    </div>
-                    <button class="carousel-control-prev" type="button" data-bs-target="#bannerCarousel"
-                        data-bs-slide="prev"><span class="carousel-control-prev-icon"></span></button>
-                    <button class="carousel-control-next" type="button" data-bs-target="#bannerCarousel"
-                        data-bs-slide="next"><span class="carousel-control-next-icon"></span></button>
-                </div>
-                <% } %>
-
-                    <% if (typeof baiVietTheoChuDe !=='undefined' && baiVietTheoChuDe.length> 0) { %>
-                        <% baiVietTheoChuDe.forEach(nhom=> { %>
-                            <div class="mb-5">
-                                <div class="d-flex justify-content-between align-items-end mb-3">
-                                    <h3 class="section-title mb-0">
-                                        <%= nhom.chuDe.TenChuDe %>
-                                    </h3>
-                                </div>
-                                <div class="position-relative scrolling-container">
-
-                                    <button class="btn-scroll btn-left"><i class="bi bi-chevron-left"></i></button>
-                                    <button class="btn-scroll btn-right"><i class="bi bi-chevron-right"></i></button>
-
-                                    <div class="scrolling-wrapper">
-                                        <% nhom.danhSach.forEach(bai=> { %>
-                                            <div class="scrolling-card">
-                                                <div class="essay-card bg-white rounded-4 p-4 d-flex flex-column h-100 position-relative transition-hover"
-                                                    style="box-shadow: 0 4px 15px rgba(67, 90, 36, 0.05); border: 1px solid rgba(67, 90, 36, 0.08);">
-                                                    <div class="d-flex justify-content-between align-items-center mb-3">
-                                                        <span class="badge"
-                                                            style="background-color: #eef7e8; color: var(--primary-color); padding: 6px 12px; font-weight: 600;">
-                                                            <%= bai.TheLoai_id ? bai.TheLoai_id.TenTheLoai : 'Bài viết'
-                                                                %>
-                                                        </span>
-                                                        <span class="text-muted small fw-medium"><i
-                                                                class="bi bi-eye"></i>
-                                                            <%= bai.LuotXem || 0 %>
-                                                        </span>
-                                                    </div>
-                                                    <a href="/bai-van/<%= bai._id %>"
-                                                        class="text-decoration-none flex-grow-1">
-                                                        <h5 class="fw-bold mb-2"
-                                                            style="color: #222; font-family: 'Judson', serif; line-height: 1.4;">
-                                                            <%= bai.TieuDe %>
-                                                        </h5>
-                                                        <p class="text-muted small"
-                                                            style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
-                                                            <%= bai.TomTat || 'Đang cập nhật nội dung...' %>
-                                                        </p>
-                                                    </a>
-                                                    <div
-                                                        class="d-flex align-items-center gap-2 text-muted small fw-medium pt-3 mt-2 border-top">
-                                                        <i class="bi bi-person-circle fs-5"></i>
-                                                        <%= bai.TacGia_id ? bai.TacGia_id.HoTen : 'Vy Admin' %>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <% }) %>
-                                    </div>
-                                </div>
-                            </div>
-                            <% }) %>
-                                <% } %>
-                                    <% if (typeof topBaiViet !=='undefined' && topBaiViet.length> 0) { %>
-                                        <div class="mt-5 mb-5 p-4 rounded-4"
-                                            style="background: linear-gradient(145deg, #ffffff, #f4f9f1); box-shadow: 0 10px 30px rgba(67,90,36,0.05);">
-
-                                            <h3 class="section-title mb-4"
-                                                style="font-family: 'Judson', serif; font-weight: 700; color: var(--primary-color);">
-                                                <i class="bi bi-bar-chart-line-fill me-2"
-                                                    style="color: #ffd700;"></i>#TrạmVănChart
-                                            </h3>
-
-                                            <div class="row align-items-center">
-
-                                                <div class="col-lg-5">
-                                                    <div class="d-flex flex-column gap-3">
-                                                        <% topBaiViet.forEach((bai, index)=> { %>
-                                                            <% let rankClass='rank-normal' ; if (index===0)
-                                                                rankClass='rank-1' ; else if (index===1)
-                                                                rankClass='rank-2' ; else if (index===2)
-                                                                rankClass='rank-3' ; %>
-                                                                <a href="/bai-van/<%= bai._id %>"
-                                                                    class="text-decoration-none text-dark">
-                                                                    <div class="chart-card">
-                                                                        <div class="ranking-number <%= rankClass %>"
-                                                                            style="font-size: 2.5rem; min-width: 50px;">
-                                                                            <%= index < 9 ? '0' + (index + 1) : (index +
-                                                                                1) %>
-                                                                        </div>
-                                                                        <div class="flex-grow-1">
-                                                                            <h6 class="fw-bold mb-0 text-truncate"
-                                                                                style="max-width: 150px;">
-                                                                                <%= bai.TieuDe %>
-                                                                            </h6>
-                                                                            <small class="text-muted">
-                                                                                <%= bai.LuotXem || 0 %> lượt xem
-                                                                            </small>
-                                                                        </div>
-                                                                    </div>
-                                                                </a>
-                                                                <% }) %>
-                                                    </div>
-                                                </div>
-
-                                                <div class="col-lg-7">
-                                                    <div style="height: 300px; position: relative;">
-                                                        <canvas id="trendingChart"></canvas>
-                                                    </div>
-                                                </div>
-
-                                            </div>
-                                        </div>
-                                        <% } %>
-                                            <h4 class="mb-4 text-muted mt-5"><i class="bi bi-stars me-2"></i>Mới cập
-                                                nhật
-                                            </h4>
-                                            <% } %>
-
-
-                                                <% if (typeof isTuSach !=='undefined' && isTuSach) { %>
-                                                    <div class="mb-5">
-                                                        <h4 class="mb-4 text-muted"><i
-                                                                class="bi bi-clock-history me-2"></i>Vừa xem gần đây
-                                                        </h4>
-                                                        <div class="row g-4">
-                                                            <% if (typeof lichSu !=='undefined' && lichSu.length> 0)
-                                                                { %>
-                                                                <% lichSu.forEach(item=> { %>
-                                                                    <% if (item.BaiVan_id) { %>
-                                                                        <div class="col-md-4">
-                                                                            <div class="essay-card"
-                                                                                style="background-color: #fcfdfa; border: 1px solid rgba(67, 90, 36, 0.1);">
-                                                                                <div>
-                                                                                    <span class="badge-category"
-                                                                                        style="font-size: 0.7rem;">Ngày
-                                                                                        xem:
-                                                                                        <%= new
-                                                                                            Date(item.NgayXem).toLocaleDateString('vi-VN')
-                                                                                            %>
-                                                                                    </span>
-                                                                                    <h3 class="essay-title"
-                                                                                        style="font-size: 1.1rem;">
-                                                                                        <%= item.BaiVan_id.TieuDe %>
-                                                                                    </h3>
-                                                                                </div>
-                                                                                <div class="mt-auto pt-2 text-end">
-                                                                                    <a href="/bai-van/<%= item.BaiVan_id._id %>"
-                                                                                        class="btn-read"
-                                                                                        style="font-size: 0.9rem;">Đọc
-                                                                                        tiếp
-                                                                                        <i
-                                                                                            class="bi bi-arrow-right"></i></a>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                        <% } %>
-                                                                            <% }) %>
-                                                                                <% } else { %>
-                                                                                    <div
-                                                                                        class="col-12 text-center text-muted py-3">
-                                                                                        Bạn chưa xem tác phẩm nào
-                                                                                        gần đây.
-                                                                                    </div>
-                                                                                    <% } %>
-                                                        </div>
-                                                    </div>
-                                                    <hr class="mb-5 opacity-10">
-                                                    <h4 class="mb-4 text-muted"><i
-                                                            class="bi bi-heart-fill text-danger me-2"></i>Danh sách
-                                                        yêu
-                                                        thích</h4>
-                                                    <% } %>
-
-                                                        <div class="row g-4">
-                                                            <% if (typeof danhSachBai !=='undefined' &&
-                                                                danhSachBai.length>
-                                                                0) { %>
-                                                                <% danhSachBai.forEach(bai=> { %>
-                                                                    <div class="col-md-4 mb-4">
-                                                                        <div class="essay-card bg-white rounded-4 p-4 d-flex flex-column h-100 position-relative transition-hover"
-                                                                            style="box-shadow: 0 4px 15px rgba(67, 90, 36, 0.05); border: 1px solid rgba(67, 90, 36, 0.08);">
-                                                                            <div
-                                                                                class="d-flex justify-content-between align-items-center mb-3">
-                                                                                <span class="badge"
-                                                                                    style="background-color: #eef7e8; color: var(--primary-color); padding: 6px 12px; font-weight: 600;">
-                                                                                    <%= bai.TheLoai_id ?
-                                                                                        bai.TheLoai_id.TenTheLoai
-                                                                                        : 'Chưa phân loại' %>
-                                                                                </span>
-                                                                                <span class="text-muted small fw-medium"
-                                                                                    title="Lượt xem"><i
-                                                                                        class="bi bi-eye"></i>
-                                                                                    <%= bai.LuotXem || 0 %>
-                                                                                </span>
-                                                                            </div>
-                                                                            <a href="/bai-van/<%= bai._id %>"
-                                                                                class="text-decoration-none flex-grow-1">
-                                                                                <h4 class="fw-bold mb-2"
-                                                                                    style="color: #222; font-family: 'Judson', serif; line-height: 1.4;">
-                                                                                    <%= bai.TieuDe %>
-                                                                                </h4>
-                                                                                <p class="text-muted small"
-                                                                                    style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.6;">
-                                                                                    <%= bai.TomTat
-                                                                                        || 'Đang cập nhật nội dung tóm tắt cho bài viết này...'
-                                                                                        %>
-                                                                                </p>
-                                                                            </a>
-                                                                            <div class="d-flex justify-content-between align-items-center pt-3 mt-2 border-top"
-                                                                                style="border-color: rgba(67, 90, 36, 0.1) !important;">
-                                                                                <div
-                                                                                    class="d-flex align-items-center gap-2 text-muted small fw-medium">
-                                                                                    <i
-                                                                                        class="bi bi-person-circle fs-5"></i>
-                                                                                    <%= bai.TacGia_id ?
-                                                                                        bai.TacGia_id.HoTen : 'Vy Admin'
-                                                                                        %>
-                                                                                </div>
-                                                                                <a href="/bai-van/<%= bai._id %>"
-                                                                                    class="text-decoration-none fw-bold"
-                                                                                    style="color: var(--primary-color);">Đọc
-                                                                                    tiếp <i
-                                                                                        class="bi bi-arrow-right ms-1"></i></a>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                    <% }) %>
-                                                                        <% } else { %>
-                                                                            <div
-                                                                                class="col-12 text-center text-muted py-5">
-                                                                                <i class="bi bi-inbox fs-1"></i>
-                                                                                <p class="mt-2">Chưa có tác phẩm nào
-                                                                                    để hiển
-                                                                                    thị.</p>
-                                                                            </div>
-                                                                            <% } %>
-                                                        </div>
+        <% } %>
+        <div class="page-container">

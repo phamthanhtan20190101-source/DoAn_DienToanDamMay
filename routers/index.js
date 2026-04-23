@@ -11,7 +11,8 @@ const binhluanRoute = require('./binhluan'); // Đã mở khóa
 // 2. Gắn kết chúng vào hệ thống
 router.use('/', taikhoanRoute);
 router.use('/', baivanRoute);
-router.use('/', theloaiRoute);   // Thêm dòng này
-router.use('/', binhluanRoute);  // Thêm dòng này
+router.use('/', theloaiRoute);   
+router.use('/', binhluanRoute);  
+router.use('/', require('./homthu'));
 
 module.exports = router;

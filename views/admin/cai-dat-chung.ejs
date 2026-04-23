@@ -1,0 +1,110 @@
+<%- include('../partials/header') %>
+
+<div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-3 mt-3">
+    <div>
+        <h2 class="fw-bold" style="color: var(--primary-color);">
+            <i class="bi bi-gear me-2"></i> Cài đặt chung
+        </h2>
+        <p class="text-muted mb-0">Quản lý các thông tin hiển thị trên toàn hệ thống (Chân trang, Liên hệ...)</p>
+    </div>
+</div>
+
+<% if (typeof req !== 'undefined' && req.query.success === '1') { %>
+    <div class="alert alert-success alert-dismissible fade show rounded-4 shadow-sm" role="alert">
+        <i class="bi bi-check-circle-fill me-2"></i> <strong>Lưu thành công!</strong> Cấu hình hệ thống đã được cập nhật.
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+<% } %>
+
+<div class="row">
+    <div class="col-lg-8">
+        <form action="/admin/cai-dat-chung" method="POST" class="card border-0 shadow-sm rounded-4 p-4 p-md-5 mb-5" style="background: white;">
+            
+            <h5 class="fw-bold text-dark mb-4 border-bottom pb-2">1. Thông tin chung</h5>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold text-muted small">Tên hệ thống (Tên Trạm)</label>
+                    <input type="text" name="TenTram" class="form-control bg-light border-0" value="<%= (typeof config !== 'undefined' && config) ? config.TenTram : 'Trạm Văn' %>" required>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold text-muted small">Email liên hệ</label>
+                    <input type="email" name="Email" class="form-control bg-light border-0" value="<%= (typeof config !== 'undefined' && config) ? config.Email : '' %>" required>
+                </div>
+                <div class="col-12 mb-4">
+                    <label class="form-label fw-bold text-muted small">Giới thiệu ngắn (Chân trang)</label>
+                    <textarea name="GioiThieu" class="form-control bg-light border-0" rows="3"><%= (typeof config !== 'undefined' && config) ? config.GioiThieu : '' %></textarea>
+                </div>
+            </div>
+
+            <h5 class="fw-bold text-dark mb-4 border-bottom pb-2 mt-2">2. Thông tin liên hệ</h5>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold text-muted small">Số điện thoại</label>
+                    <div class="input-group">
+                        <span class="input-group-text border-0 bg-light"><i class="bi bi-telephone text-muted"></i></span>
+                        <input type="text" name="SoDienThoai" class="form-control bg-light border-0" value="<%= (typeof config !== 'undefined' && config) ? config.SoDienThoai : '' %>">
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold text-muted small">Địa chỉ</label>
+                    <div class="input-group">
+                        <span class="input-group-text border-0 bg-light"><i class="bi bi-geo-alt text-muted"></i></span>
+                        <input type="text" name="DiaChi" class="form-control bg-light border-0" value="<%= (typeof config !== 'undefined' && config) ? config.DiaChi : '' %>">
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold text-muted small">Link Facebook</label>
+                    <div class="input-group">
+                        <span class="input-group-text border-0 bg-light"><i class="bi bi-facebook text-muted"></i></span>
+                        <input type="text" name="Facebook" class="form-control bg-light border-0" value="<%= (typeof config !== 'undefined' && config) ? config.Facebook : '#' %>">
+                    </div>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <label class="form-label fw-bold text-muted small">Link Instagram</label>
+                    <div class="input-group">
+                        <span class="input-group-text border-0 bg-light"><i class="bi bi-instagram text-muted"></i></span>
+                        <input type="text" name="Instagram" class="form-control bg-light border-0" value="<%= (typeof config !== 'undefined' && config) ? config.Instagram : '#' %>">
+                    </div>
+                </div>
+            </div>
+
+            <h5 class="fw-bold text-dark mb-4 border-bottom pb-2 mt-2">3. Bản quyền</h5>
+            <div class="mb-4">
+                <label class="form-label fw-bold text-muted small">Dòng Copyright</label>
+                <input type="text" name="Copyright" class="form-control bg-light border-0" value="<%= (typeof config !== 'undefined' && config) ? config.Copyright : '© 2026 Trạm Văn' %>">
+            </div>
+
+            <div class="text-end mt-2 border-top pt-4">
+                <button type="submit" class="btn btn-success rounded-pill px-5 fw-bold shadow-sm py-2" style="background-color: var(--primary-color);">
+                    <i class="bi bi-floppy me-2"></i> Lưu Cấu Hình
+                </button>
+            </div>
+        </form>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm rounded-4 p-4 sticky-top" style="background-color: var(--bg-color); top: 90px;">
+            <h5 class="fw-bold mb-3 text-success"><i class="bi bi-info-circle me-2"></i>Mẹo nhỏ cho Admin</h5>
+            <ul class="text-muted small ps-3 mb-0" style="line-height: 1.8;">
+                <li class="mb-2">Mọi thông tin bạn thay đổi tại đây sẽ được cập nhật <strong>ngay lập tức</strong> xuống phần Chân trang (Footer) của tất cả người dùng.</li>
+                <li class="mb-2">Nếu Trạm Văn chưa có fanpage, bạn hãy để dấu <code>#</code> vào ô link Facebook/Instagram nhé.</li>
+                <li>Đừng quên kiểm tra kỹ số điện thoại và email để tránh việc độc giả liên hệ nhầm!</li>
+            </ul>
+        </div>
+    </div>
+</div> <script>
+    if(window.location.search.includes('success=1')) {
+        window.history.replaceState(null, null, window.location.pathname);
+    }
+</script>
+
+<style>
+    /* Làm đẹp hiệu ứng khi click vào ô nhập liệu */
+    .form-control:focus {
+        box-shadow: 0 0 0 0.25rem rgba(67, 90, 36, 0.15);
+        background-color: white !important;
+        border: 1px solid var(--primary-color) !important;
+    }
+</style>
+
+<%- include('../partials/footer') %>

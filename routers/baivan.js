@@ -8,6 +8,27 @@ const { GoogleGenerativeAI } = require("@google/generative-ai");
 // Khởi tạo AI với Key từ file .env
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 console.log("Kiểm tra Key:", process.env.GEMINI_API_KEY ? "Đã nhận Key ✅" : "Chưa nhận Key ❌");
+
+function simpleChatReply(message = '') {
+    const text = message.toString().trim().toLowerCase();
+
+    if (!text) {
+        return 'Chào Vy! Mình là Trạm Trưởng. Bạn cần mình giúp gì về Văn học không?';
+    }
+    if (text.includes('chào') || text.includes('xin chào') || text.includes('hello')) {
+        return 'Chào Vy! Mình là Trạm Trưởng. Mình có thể giúp Vy tìm bài, chọn thể loại hoặc gửi bài.';
+    }
+    if (text.includes('gửi bài') || text.includes('đăng bài') || text.includes('nộp bài')) {
+        return 'Để gửi bài, Vy vào mục Gửi Bài Viết và điền thông tin, tệp đính kèm Word/PDF nhé.';
+    }
+    if (text.includes('thư viện') || text.includes('tài liệu')) {
+        return 'Vy có thể khám phá các bài viết trong mục Thư Viện Tài Liệu hoặc trên trang chủ.';
+    }
+    if (text.includes('cảm nhận') || text.includes('góc cảm nhận')) {
+        return 'Góc Cảm Nhận hiển thị bài viết tản mạn và cảm xúc của cộng đồng. Vy thử vào mục Góc Cảm Nhận nhé.';
+    }
+    return 'Trạm Trưởng chưa hiểu rõ lắm. Vy thử hỏi về bài viết, gửi bài, hoặc mục Thư Viện Tài Liệu nhé.';
+}
 // Import các Models
 const BaiVan = require('../models/baivan');
 const TaiKhoan = require('../models/taikhoan');
@@ -561,21 +582,104 @@ router.post('/admin/sua-bai/:id', checkAdmin, async (req, res) => {
 
 // API xử lý Chatbot AI
 router.post('/api/chat', async (req, res) => {
+    const message = req.body.message || '';
+
+    console.log("CHAT REQUEST:", message);
+
+    // Nếu chưa cấu hình key Gemini, trả lời fallback ngay
+    if (!process.env.GEMINI_API_KEY) {
+        console.log("NO GEMINI KEY");
+        return res.json({ success: true, text: simpleChatReply(message) });
+    }
+
     try {
-        // Đưa dòng này vào bên trong hàm try
-        // Thử đổi từ "gemini-1.5-flash" sang "gemini-1.5-flash-latest"
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
-        
-        const prompt = `Bạn là trợ lý ảo tên "Trạm Trưởng" của website Trạm Văn. 
-                        Hãy trả lời ngắn gọn, thân thiện bằng tiếng Việt. 
-                        Câu hỏi: ${req.body.message}`;
-        
+        console.log("CALLING GEMINI...");
+        const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+        const prompt = `Bạn là trợ lý ảo tên "Trạm Trưởng" của website Trạm Văn.\nHãy trả lời ngắn gọn, thân thiện bằng tiếng Việt.\nCâu hỏi: ${message}`;
+        console.log("PROMPT:", prompt);
         const result = await model.generateContent(prompt);
-        const response = await result.response;
-        res.json({ success: true, text: response.text() });
+        console.log("RESULT:", result);
+
+        let reply = 'Trạm Trưởng đang bận học bài, thử lại sau nhé!';
+
+        if (result?.response && typeof result.response.text === 'function') {
+            reply = result.response.text();
+            console.log("REPLY FROM TEXT():", reply);
+        } else if (result?.response?.candidates?.length) {
+            const candidate = result.response.candidates[0];
+            if (candidate?.content?.parts?.length) {
+                reply = candidate.content.parts.map(part => part.text).join('') || reply;
+                console.log("REPLY FROM CANDIDATES:", reply);
+            }
+        }
+
+        console.log("FINAL REPLY:", reply);
+        return res.json({ success: true, text: reply });
     } catch (err) {
-        console.error("LỖI :", err);
-        res.json({ success: false, text: "Trạm Trưởng đang bận học bài, thử lại sau nhé!" });
+        console.error("LỖI CHATBOT:", err instanceof Error ? err.message : err, err);
+        return res.json({ success: true, text: simpleChatReply(message) });
+    }
+});
+// ==========================================
+// ROUTE: GÓC CẢM NHẬN (TẢN MẠN)
+// ==========================================
+router.get('/cam-nhan', async (req, res) => {
+    try {
+        // 1. Tìm Thể loại mang tên "Cảm nhận" hoặc "Tản mạn"
+        const theLoai = await TheLoai.findOne({ TenTheLoai: /Cảm nhận|Tản mạn/i });
+        
+        let query = { TrangThai: 'DaDuyet' };
+        
+        // Nếu tìm thấy thể loại trong Database thì chỉ lấy bài của thể loại đó
+        if (theLoai) {
+            query.TheLoai_id = theLoai._id;
+        }
+
+        // 2. Lấy danh sách bài viết
+        const danhSachCamNhan = await BaiVan.find(query)
+            .populate('TacGia_id', 'HoTen')
+            .sort({ NgayDang: -1 }); // Bài mới nhất lên đầu
+
+        // 3. Trả về giao diện
+        res.render('cam-nhan', { 
+            danhSachCamNhan, 
+            user: req.session.user,
+            titlePage: 'Góc Cảm Nhận' 
+        });
+    } catch (err) {
+        console.error("Lỗi tải Góc Cảm Nhận:", err);
+        res.status(500).send('Lỗi máy chủ: ' + err.message);
+    }
+});
+// ROUTE: TÌM KIẾM BÀI VĂN
+router.get('/tim-kiem', async (req, res) => {
+    try {
+        const tuKhoa = req.query.q; // Lấy từ khóa người dùng gõ vào
+        
+        // Nếu không có từ khóa thì đuổi về trang chủ
+        if (!tuKhoa || tuKhoa.trim() === '') {
+            return res.redirect('/');
+        }
+
+        // Tìm kiếm các bài Đã Duyệt có Tiêu đề HOẶC Tóm tắt chứa từ khóa
+        // $regex và $options: 'i' giúp tìm kiếm không phân biệt chữ hoa, chữ thường
+        const ketQuaTimKiem = await BaiVan.find({
+            TrangThai: 'DaDuyet',
+            $or: [
+                { TieuDe: { $regex: tuKhoa.trim(), $options: 'i' } },
+                { TomTat: { $regex: tuKhoa.trim(), $options: 'i' } }
+            ]
+        }).populate('TacGia_id', 'HoTen').sort({ NgayDang: -1 });
+
+        res.render('tim-kiem', { 
+            tuKhoa,
+            ketQua: ketQuaTimKiem,
+            user: req.session.user,
+            titlePage: 'Kết quả tìm kiếm'
+        });
+    } catch (err) {
+        console.error("Lỗi tìm kiếm:", err);
+        res.status(500).send('Lỗi máy chủ khi tìm kiếm.');
     }
 });
 module.exports = router;

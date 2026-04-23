@@ -1,0 +1,54 @@
+<%- include('partials/header') %>
+
+<div class="content-wrapper p-4">
+    <div class="mb-5 border-bottom pb-4">
+        <h2 class="fw-bold" style="color: var(--primary-color);">
+            <i class="bi bi-search me-2"></i> Kết quả tìm kiếm
+        </h2>
+        <p class="text-muted fs-5 mt-2">
+            Tìm thấy <strong><%= ketQua.length %></strong> bài viết phù hợp với từ khóa: <span class="text-success fw-bold">"<%= tuKhoa %>"</span>
+        </p>
+    </div>
+
+    <div class="row g-4">
+        <% if (ketQua && ketQua.length > 0) { %>
+            <% ketQua.forEach(bai => { %>
+                <div class="col-md-6 col-lg-4">
+                    <div class="card h-100 border-0 shadow-sm rounded-4 overflow-hidden card-hover" style="background: white;">
+                        <div class="card-body p-4 d-flex flex-column">
+                            <h4 class="fw-bold mb-3">
+                                <a href="/bai-van/<%= bai._id %>" class="text-decoration-none text-dark stretched-link">
+                                    <%= bai.TieuDe %>
+                                </a>
+                            </h4>
+                            <p class="text-secondary small flex-grow-1">
+                                <%= bai.TomTat ? bai.TomTat.substring(0, 120) + '...' : 'Đang cập nhật nội dung tóm tắt...' %>
+                            </p>
+                            <div class="d-flex justify-content-between align-items-center border-top pt-3 mt-3">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-person-circle me-2 text-success"></i>
+                                    <span class="small fw-bold text-muted"><%= bai.TacGia_id ? bai.TacGia_id.HoTen : 'Vô danh' %></span>
+                                </div>
+                                <div class="text-muted small"><i class="bi bi-eye me-1"></i><%= bai.LuotXem || 0 %></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <% }) %>
+        <% } else { %>
+            <div class="col-12 text-center py-5">
+                <i class="bi bi-journal-x display-1 text-muted opacity-25 mb-3 d-block"></i>
+                <h4 class="fw-bold text-dark">Không tìm thấy bài viết nào</h4>
+                <p class="text-muted">Rất tiếc, Trạm Văn chưa có bài viết nào khớp với từ khóa của bạn. Thử dùng một từ khóa khác ngắn gọn hơn xem sao nhé!</p>
+                <a href="/" class="btn btn-outline-success rounded-pill px-4 mt-3">Quay về Trang chủ</a>
+            </div>
+        <% } %>
+    </div>
+</div>
+
+<style>
+    .card-hover { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+    .card-hover:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(67, 90, 36, 0.1) !important; }
+</style>
+
+<%- include('partials/footer') %>

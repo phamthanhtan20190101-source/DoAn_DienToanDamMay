@@ -60,7 +60,56 @@ router.get('/dang-xuat', (req, res) => {
     req.session.destroy();
     res.redirect('/');
 });
+router.get('/dang-ky', (req, res) => {
+    res.render('dang-ky', { 
+        titlePage: 'Đăng Ký',
+        user: req.session.user,
+        error: null 
+    });
+});
 
+// 2. Xử lý khi người dùng bấm nút Đăng ký
+router.post('/dang-ky', async (req, res) => {
+    try {
+        const { HoTen, TenDangNhap, MatKhau, XacNhanMatKhau } = req.body;
+
+        // Bắt lỗi: Mật khẩu nhập lại không khớp
+        if (MatKhau !== XacNhanMatKhau) {
+            return res.render('dang-ky', { 
+                error: 'Mật khẩu xác nhận không khớp!', 
+                titlePage: 'Đăng Ký',
+                user: req.session.user
+            });
+        }
+
+        // Bắt lỗi: Tên đăng nhập đã có người xài
+        const userTonTai = await TaiKhoan.findOne({ TenDangNhap: TenDangNhap });
+        if (userTonTai) {
+            return res.render('dang-ky', { 
+                error: 'Tên đăng nhập này đã có người sử dụng!', 
+                titlePage: 'Đăng Ký',
+                user: req.session.user
+            });
+        }
+
+        // Tạo tài khoản mới (Mặc định quyền là 'user')
+        const taiKhoanMoi = new TaiKhoan({
+            HoTen: HoTen,
+            TenDangNhap: TenDangNhap,
+            MatKhau: MatKhau, // Lưu ý: Ở dự án thực tế sau này Vy nên dùng bcrypt để mã hóa mật khẩu nhé
+            QuyenHan: 'user'
+        });
+
+        await taiKhoanMoi.save();
+
+        // Đăng ký thành công thì đẩy về trang Đăng nhập kèm lời nhắn
+        res.redirect('/dang-nhap?message=Đăng ký thành công! Hãy đăng nhập để tiếp tục.');
+
+    } catch (err) {
+        console.error("Lỗi đăng ký:", err);
+        res.status(500).send("Lỗi máy chủ khi đăng ký tài khoản.");
+    }
+});
 // ==========================================
 // PHẦN ADMIN: QUẢN LÝ NGƯỜI DÙNG
 // ==========================================
@@ -113,7 +162,55 @@ router.get('/admin/xoa-tai-khoan/:id', checkAdmin, async (req, res) => {
         res.status(500).send('Lỗi khi xóa: ' + err.message);
     }
 });
+const CauHinh = require('../models/cauhinh');
 
+// 1. Trang cài đặt chung
+router.get('/admin/cai-dat-chung', checkAdmin, async (req, res) => {
+    try {
+        let config = await CauHinh.findOne();
+        if (!config) config = await CauHinh.create({}); // Tạo mới nếu chưa có
+        res.render('admin/cai-dat-chung', { config, user: req.session.user });
+    } catch (err) {
+        res.status(500).send(err.message);
+    }
+});
+
+// 2. Xử lý lưu cài đặt
+router.post('/admin/cai-dat-chung', checkAdmin, async (req, res) => {
+    try {
+        await CauHinh.findOneAndUpdate({}, req.body, { upsert: true });
+        res.redirect('/admin/cai-dat-chung?success=1');
+    } catch (err) {
+        res.status(500).send(err.message);
+    }
+});
+// ==========================================
+// 4. CẤP QUYỀN ADMIN CHO NGƯỜI DÙNG
+// ==========================================
+router.get('/admin/cap-quyen-admin/:id', checkAdmin, async (req, res) => {
+    try {
+        // Tìm user theo ID và đổi QuyenHan thành 'admin'
+        await TaiKhoan.findByIdAndUpdate(req.params.id, { QuyenHan: 'admin' });
+        res.redirect('/admin/quan-ly-nguoi-dung'); // Quay lại trang danh sách
+    } catch (err) {
+        console.error("Lỗi cấp quyền admin:", err);
+        res.status(500).send('Lỗi máy chủ khi cấp quyền.');
+    }
+});
+
+// ==========================================
+// 5. HẠ QUYỀN ADMIN XUỐNG NGƯỜI DÙNG THƯỜNG
+// ==========================================
+router.get('/admin/ha-quyen-admin/:id', checkAdmin, async (req, res) => {
+    try {
+        // Đổi QuyenHan về lại 'user'
+        await TaiKhoan.findByIdAndUpdate(req.params.id, { QuyenHan: 'user' });
+        res.redirect('/admin/quan-ly-nguoi-dung');
+    } catch (err) {
+        console.error("Lỗi hạ quyền admin:", err);
+        res.status(500).send('Lỗi máy chủ khi hạ quyền.');
+    }
+});
 // Hiển thị trang Hồ sơ cá nhân
 router.get('/ho-so', async (req, res) => {
     // Nếu chưa đăng nhập thì đuổi về trang đăng nhập
