@@ -11,6 +11,7 @@ const TheLoai = require('../models/theloai');
 const YeuThich = require('../models/yeuthich');
 const LichSu = require('../models/lichsu');
 const ChuDe = require('../models/chude');
+const Banner = require('../models/banner');
 const BinhLuan = require('../models/binhluan');
 
 // 1. CẤU HÌNH UPLOAD & GOOGLE DRIVE
@@ -31,16 +32,55 @@ const FOLDER_ID = '1Vl98WrQU_ET7aACKP4autYyWenefWeB8'; // <--- Đảm bảo ID n
 // ==========================================
 
 // Trang chủ: Hiển thị bài viết mới nhất
+// Trang chủ: Hiển thị bài viết mới nhất (Đã nâng cấp Zing MP3 Modules)
 router.get('/', async (req, res) => {
     try {
+        // 1. Lấy danh sách Banner đang Bật
+        const danhSachBanner = await Banner.find({ TrangThai: true }).sort({ createdAt: -1 });
+
+        // 2. Lấy danh sách Chủ đề để cuộn ngang (Lấy 3 chủ đề)
+        const cacChuDe = await ChuDe.find().limit(3);
+        
+        // 3. Lọc bài viết cho từng Chủ đề
+        let baiVietTheoChuDe = [];
+        for (let cd of cacChuDe) {
+            // Tìm các bài văn có chứa ID chủ đề này, lấy 8 bài để cuộn ngang
+            const baiViet = await BaiVan.find({ 
+                ChuDe_id: cd._id, 
+                TrangThai: 'DaDuyet' 
+            })
+            .populate('TacGia_id', 'HoTen')
+            .populate('TheLoai_id', 'TenTheLoai')
+            .sort({ createdAt: -1 })
+            .limit(8);
+            
+            // Chỉ đẩy ra ngoài nếu chủ đề đó có bài viết
+            if (baiViet.length > 0) {
+                baiVietTheoChuDe.push({ chuDe: cd, danhSach: baiViet });
+            }
+        }
+
+        // Lấy thêm danh sách bài mới nhất (để dự phòng nếu chưa có bài theo chủ đề)
         const danhSachBai = await BaiVan.find({ TrangThai: 'DaDuyet' })
             .populate('TacGia_id', 'HoTen')
-            .sort({ NgayDang: -1 });
+            .populate('TheLoai_id', 'TenTheLoai')
+            .sort({ NgayDang: -1 })
+            .limit(6);
+
+        //Lấy Top 5 bài viết có Lượt Xem cao nhất cho Bảng xếp hạng
+        const topBaiViet = await BaiVan.find({ TrangThai: 'DaDuyet' })
+            .populate('TacGia_id', 'HoTen')
+            .sort({ LuotXem: -1 }) // Sắp xếp giảm dần theo lượt xem
+            .limit(5); // Chỉ lấy 5 bài
+
         res.render('home', { 
-            danhSachBai, 
+            danhSachBanner, 
+            baiVietTheoChuDe,
+            danhSachBai, // Gửi thêm list cũ đề phòng
+            topBaiViet, // Gửi danh sách top bài viết
             user: req.session.user, 
             isTuSach: false,
-            titlePage: 'Tác Phẩm Nổi Bật' 
+            titlePage: 'Khám Phá Trạm Văn' 
         }); 
     } catch (err) {
         res.status(500).send('Lỗi tải trang chủ: ' + err.message);
@@ -304,6 +344,110 @@ router.get('/admin/xoa-chu-de/:id', checkAdmin, async (req, res) => {
         res.status(500).send('Lỗi xóa chủ đề: ' + err.message); 
     }
 });
+// 4. Hiển thị form Sửa Chủ đề
+router.get('/admin/sua-chu-de/:id', checkAdmin, async (req, res) => {
+    try {
+        const chuDe = await ChuDe.findById(req.params.id);
+        if (!chuDe) return res.status(404).send('Không tìm thấy chủ đề');
+        res.render('admin/sua-chu-de', { chuDe, user: req.session.user });
+    } catch (err) { 
+        res.status(500).send('Lỗi: ' + err.message); 
+    }
+});
+
+// 5. Xử lý Cập nhật Chủ đề vào Database
+router.post('/admin/sua-chu-de/:id', checkAdmin, async (req, res) => {
+    try {
+        const { TenChuDe, MoTa } = req.body;
+        // Tìm chủ đề theo ID và cập nhật nội dung mới
+        await ChuDe.findByIdAndUpdate(req.params.id, { TenChuDe, MoTa });
+        res.redirect('/admin/quan-ly-chu-de'); // Sửa xong thì quay lại danh sách
+    } catch (err) { 
+        res.status(500).send('Lỗi cập nhật: ' + err.message); 
+    }
+});
+
+// ==========================================
+// QUẢN LÝ BANNER (Trang Chủ)
+// ==========================================
+// Cấu hình Multer để lưu ảnh Banner vào thư mục public/uploads/banners
+const storageBanner = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'public/uploads/banners') // Lưu vào đây
+    },
+    filename: function (req, file, cb) {
+        cb(null, Date.now() + '-' + file.originalname) // Đổi tên file để không bị trùng
+    }
+});
+const uploadBanner = multer({ storage: storageBanner });
+
+// 1. Hiển thị trang Quản lý Banner
+router.get('/admin/quan-ly-banner', checkAdmin, async (req, res) => {
+    try {
+        const danhSachBanner = await Banner.find().sort({ createdAt: -1 });
+        // Lấy danh sách các bài văn đã duyệt để thả vào ô chọn Link
+        const danhSachBai = await BaiVan.find({ TrangThai: 'DaDuyet' }).select('_id TieuDe').sort({ NgayDang: -1 });
+        
+        res.render('admin/quan-ly-banner', { danhSachBanner, danhSachBai, user: req.session.user });
+    } catch (err) { 
+        res.status(500).send('Lỗi: ' + err.message); 
+    }
+});
+
+// 2. Xử lý Thêm Banner mới (Hỗ trợ Upload File)
+router.post('/admin/them-banner', checkAdmin, uploadBanner.single('HinhAnhFile'), async (req, res) => {
+    try {
+        const { TieuDe, DuongDan } = req.body;
+        
+        // Tạo đường dẫn ảnh để lưu vào DB (Dấu / ở đầu để web hiểu là lấy từ thư mục public)
+        const duongDanAnh = req.file ? '/uploads/banners/' + req.file.filename : '';
+
+        const newBanner = new Banner({ 
+            TieuDe, 
+            HinhAnh: duongDanAnh, // Lưu đường dẫn ảnh local
+            DuongDan: DuongDan || '#', 
+            TrangThai: true 
+        });
+        await newBanner.save();
+        res.redirect('/admin/quan-ly-banner');
+    } catch (err) { 
+        res.status(500).send('Lỗi thêm banner: ' + err.message); 
+    }
+});
+
+// 3. Xóa Banner
+router.get('/admin/xoa-banner/:id', checkAdmin, async (req, res) => {
+    try {
+        await Banner.findByIdAndDelete(req.params.id);
+        res.redirect('/admin/quan-ly-banner');
+    } catch (err) { 
+        res.status(500).send('Lỗi xóa banner: ' + err.message); 
+    }
+});
+
+// Hiển thị form Sửa Thể loại
+router.get('/admin/sua-the-loai/:id', checkAdmin, async (req, res) => {
+    try {
+        const theLoai = await TheLoai.findById(req.params.id);
+        if (!theLoai) return res.status(404).send('Không tìm thấy thể loại');
+        res.render('admin/sua-the-loai', { theLoai, user: req.session.user });
+    } catch (err) { 
+        res.status(500).send('Lỗi: ' + err.message); 
+    }
+});
+
+// Xử lý Cập nhật Thể loại vào Database
+router.post('/admin/sua-the-loai/:id', checkAdmin, async (req, res) => {
+    try {
+        const { TenTheLoai, MoTa } = req.body;
+        // Cập nhật tên và mô tả mới
+        await TheLoai.findByIdAndUpdate(req.params.id, { TenTheLoai, MoTa });
+        // Sửa xong thì quay lại trang danh sách thể loại
+        res.redirect('/admin/them-the-loai'); 
+    } catch (err) { 
+        res.status(500).send('Lỗi cập nhật: ' + err.message); 
+    }
+});
 // Dashboard Thống kê
 router.get('/admin/dashboard', checkAdmin, async (req, res) => {
     try {
@@ -351,6 +495,39 @@ router.get('/admin/xoa-bai/:id', checkAdmin, async (req, res) => {
         res.redirect('/admin/quan-ly-bai-viet');
     } catch (err) { res.status(500).send(err.message); }
 });
+// Hiển thị form Sửa Bài Viết (Để gán Chủ đề)
+router.get('/admin/sua-bai/:id', checkAdmin, async (req, res) => {
+    try {
+        const bai = await BaiVan.findById(req.params.id);
+        if (!bai) return res.status(404).send('Không tìm thấy bài viết');
+        
+        // Lấy danh sách Thể loại và Chủ đề để đưa vào menu thả xuống (Dropdown)
+        const danhSachTheLoai = await TheLoai.find();
+        const danhSachChuDe = await ChuDe.find();
+        
+        res.render('admin/sua-bai', { bai, danhSachTheLoai, danhSachChuDe, user: req.session.user });
+    } catch (err) { 
+        res.status(500).send('Lỗi: ' + err.message); 
+    }
+});
 
+// Xử lý Cập nhật Bài Viết vào Database
+router.post('/admin/sua-bai/:id', checkAdmin, async (req, res) => {
+    try {
+        const { TieuDe, TheLoai_id, ChuDe_id, TrangThai } = req.body;
+        
+        // Cập nhật các thông tin mới
+        await BaiVan.findByIdAndUpdate(req.params.id, { 
+            TieuDe, 
+            TheLoai_id, 
+            ChuDe_id: ChuDe_id ? ChuDe_id : null, // Nếu không chọn chủ đề thì để trống
+            TrangThai 
+        });
+        
+        res.redirect('/admin/quan-ly-bai-viet'); 
+    } catch (err) { 
+        res.status(500).send('Lỗi cập nhật: ' + err.message); 
+    }
+});
 module.exports = router;
 

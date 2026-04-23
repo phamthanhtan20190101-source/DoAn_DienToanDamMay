@@ -29,11 +29,12 @@
         <div style="flex-grow: 1; overflow-y: auto;">
             <span class="admin-group-label" style="margin-top: 0;">Hệ thống</span>
             <a href="/admin/dashboard"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a>
-            <a href="#"><i class="bi bi-images me-2"></i> Quản lý Banner</a>
+            <a href="/admin/quan-ly-banner"><i class="bi bi-images me-2"></i> Quản lý Banner</a>
             <a href="/admin/duyet-bai"><i class="bi bi-check2-circle me-2"></i> Duyệt Bài Viết</a>
 
             <span class="admin-group-label">Nội dung</span>
             <a href="/admin/them-the-loai"><i class="bi bi-tags me-2"></i> Quản Lý Thể Loại</a>
+            <a href="/admin/quan-ly-chu-de"><i class="bi bi-collection me-2"></i> Quản Lý Chủ Đề</a>
             <a href="/admin/quan-ly-bai-viet" class="active"><i class="bi bi-journal-text me-2"></i> Quản Lý Bài Viết</a>
 
             <span class="admin-group-label">Cộng đồng</span>
@@ -86,6 +87,10 @@
                                     <a href="/bai-van/<%= bai._id %>" target="_blank" class="btn btn-sm btn-outline-primary"
                                         title="Xem trước bài viết">
                                         <i class="bi bi-eye"></i>
+                                    </a>
+                            
+                                    <a href="/admin/sua-bai/<%= bai._id %>" class="btn btn-sm btn-outline-success" title="Chỉnh sửa bài viết">
+                                        <i class="bi bi-pencil-square"></i>
                                     </a>
                             
                                     <a href="/admin/xoa-bai/<%= bai._id %>" class="btn btn-sm btn-outline-danger" title="Xóa bài viết"

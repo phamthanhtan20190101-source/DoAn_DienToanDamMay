@@ -2,13 +2,13 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Quản lý Chủ Đề - Trạm Văn</title>
+    <title>Quản lý Banner - Trạm Văn</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
     <link href="https://fonts.googleapis.com/css2?family=Judson:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
         :root { --primary-color: #435a24; --bg-color: #eef7e8; --sidebar-bg: #a8d08d; --white: #ffffff; }
-        body { background: var(--bg-color); color: #333; font-family: 'Inter', sans-serif; display: flex; min-height: 100vh; margin: 0; }
+        body { background: var(--bg-color); font-family: 'Inter', sans-serif; display: flex; min-height: 100vh; margin: 0; }
         .sidebar { width: 280px; background: var(--sidebar-bg); height: 100vh; position: fixed; padding: 20px; box-shadow: 2px 0 10px rgba(0,0,0,0.05); }
         .main-content { margin-left: 280px; padding: 40px; width: calc(100% - 280px); }
         .upload-card { background: var(--white); border-radius: 20px; padding: 2.5rem; box-shadow: 0 10px 40px rgba(67, 90, 36, 0.05); margin-bottom: 30px; }
@@ -25,12 +25,12 @@
         <div style="flex-grow: 1; overflow-y: auto;">
             <span class="admin-group-label" style="margin-top: 0;">Hệ thống</span>
             <a href="/admin/dashboard"><i class="bi bi-speedometer2 me-2"></i> Dashboard</a>
-            <a href="/admin/quan-ly-banner"><i class="bi bi-images me-2"></i> Quản lý Banner</a>
+            <a href="/admin/quan-ly-banner" class="active"><i class="bi bi-images me-2"></i> Quản lý Banner</a>
             <a href="/admin/duyet-bai"><i class="bi bi-check2-circle me-2"></i> Duyệt Bài Viết</a>
 
             <span class="admin-group-label">Nội dung</span>
             <a href="/admin/them-the-loai"><i class="bi bi-tags me-2"></i> Quản Lý Thể Loại</a>
-            <a href="/admin/quan-ly-chu-de" class="active"><i class="bi bi-collection me-2"></i> Quản Lý Chủ Đề</a>
+            <a href="/admin/quan-ly-chu-de"><i class="bi bi-collection me-2"></i> Quản Lý Chủ Đề</a>
             <a href="/admin/quan-ly-bai-viet"><i class="bi bi-journal-text me-2"></i> Quản Lý Bài Viết</a>
         </div>
         <div class="mt-auto pt-3 border-top" style="border-color: rgba(67, 90, 36, 0.15) !important;">
@@ -41,59 +41,58 @@
     </div>
 
     <div class="main-content">
-        <h2 class="mb-4" style="color: var(--primary-color); font-family: 'Judson', serif; font-weight: 700;">Quản lý Bộ sưu tập / Chủ đề</h2>
+        <h2 class="mb-4" style="color: var(--primary-color); font-family: 'Judson', serif; font-weight: 700;">Quản lý Banner (Tiêu điểm)</h2>
         
         <div class="upload-card">
-            <h4 style="color: var(--primary-color); font-weight: 700;">Thêm chủ đề mới</h4>
-            <p class="text-muted small">Ví dụ: Góc chữa lành, Dành cho sĩ tử 12, Tản mạn đêm khuya...</p>
-            
-            <% if (error) { %><div class="alert alert-danger"><%= error %></div><% } %>
-            
-            <form action="/admin/them-chu-de" method="POST" class="mt-3">
-                <div class="mb-3">
-                    <label class="form-label fw-bold">Tên chủ đề</label>
-                    <input type="text" name="TenChuDe" class="form-control" style="border-radius: 10px;" placeholder="Nhập tên chủ đề..." required>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label fw-bold">Mô tả (Tùy chọn)</label>
-                    <textarea name="MoTa" class="form-control" style="border-radius: 10px;" rows="2" placeholder="Chủ đề này viết về..."></textarea>
-                </div>
-                <button type="submit" class="btn btn-success w-100" style="background-color: var(--primary-color); border: none; border-radius: 10px; padding: 12px;">
-                    <i class="bi bi-plus-circle me-2"></i> Lưu Chủ Đề
-                </button>
-            </form>
+            <h4 style="color: var(--primary-color); font-weight: 700;">Thêm Banner mới</h4>
+            <form action="/admin/them-banner" method="POST" enctype="multipart/form-data" class="mt-3">
+    <div class="mb-3">
+        <label class="form-label fw-bold">Tiêu đề Banner</label>
+        <input type="text" name="TieuDe" class="form-control" style="border-radius: 10px;" placeholder="Nhập dòng chữ to nổi bật..." required>
+    </div>
+    
+    <div class="mb-3">
+        <label class="form-label fw-bold">Chọn Ảnh Banner từ máy tính</label>
+        <input type="file" name="HinhAnhFile" class="form-control" style="border-radius: 10px;" accept="image/png, image/jpeg, image/webp" required>
+    </div>
+    
+    <div class="mb-4">
+        <label class="form-label fw-bold">Banner này dẫn đến bài viết nào?</label>
+        <select name="DuongDan" class="form-select" style="border-radius: 10px;">
+            <option value="#">Không dẫn đi đâu cả (Chỉ hiện ảnh)</option>
+            <% if (typeof danhSachBai !== 'undefined') { %>
+                <% danhSachBai.forEach(bai => { %>
+                    <option value="/bai-van/<%= bai._id %>">Bài viết: <%= bai.TieuDe %></option>
+                <% }) %>
+            <% } %>
+        </select>
+    </div>
+    
+    <button type="submit" class="btn btn-success w-100" style="background-color: var(--primary-color); border: none; border-radius: 10px; padding: 12px;">
+        <i class="bi bi-cloud-arrow-up me-2"></i> Tải lên & Thêm Banner
+    </button>
+</form>
         </div>
 
         <div class="upload-card">
-            <h4 style="color: var(--primary-color); font-weight: 700;">Danh sách chủ đề</h4>
+            <h4 style="color: var(--primary-color); font-weight: 700;">Danh sách Banner đang chạy</h4>
             <table class="table table-hover mt-3 align-middle">
                 <thead>
-                    <tr>
-                        <th>Tên chủ đề</th>
-                        <th>Mô tả</th>
-                        <th>Hành động</th>
-                    </tr>
+                    <tr><th>Hình ảnh</th><th>Tiêu đề</th><th>Hành động</th></tr>
                 </thead>
                 <tbody>
-                    <% if (typeof danhSachChuDe !== 'undefined' && danhSachChuDe.length > 0) { %>
-                        <% danhSachChuDe.forEach(cd => { %>
+                    <% if (typeof danhSachBanner !== 'undefined' && danhSachBanner.length > 0) { %>
+                        <% danhSachBanner.forEach(banner => { %>
                             <tr>
-                                <td><span class="badge" style="background-color: var(--primary-color); font-size: 0.85rem; padding: 8px 12px;"><%= cd.TenChuDe %></span></td>
-                                <td class="text-muted small"><%= cd.MoTa %></td>
+                                <td><img src="<%= banner.HinhAnh %>" alt="Banner" style="width: 100px; height: 50px; object-fit: cover; border-radius: 5px;"></td>
+                                <td><strong><%= banner.TieuDe %></strong></td>
                                 <td>
-                                    <div class="d-flex gap-2">
-                                        <a href="/admin/sua-chu-de/<%= cd._id %>" class="btn btn-sm btn-outline-primary" title="Sửa">
-                                            <i class="bi bi-pencil-square"></i>
-                                        </a>
-                                        <a href="/admin/xoa-chu-de/<%= cd._id %>" class="btn btn-sm btn-outline-danger" title="Xóa" onclick="return confirm('Bạn có chắc chắn muốn xóa chủ đề này?');">
-                                            <i class="bi bi-trash"></i>
-                                        </a>
-                                    </div>
+                                    <a href="/admin/xoa-banner/<%= banner._id %>" class="btn btn-sm btn-outline-danger" onclick="return confirm('Xóa banner này?');"><i class="bi bi-trash"></i></a>
                                 </td>
                             </tr>
                         <% }) %>
                     <% } else { %>
-                        <tr><td colspan="3" class="text-center text-muted py-4">Chưa có chủ đề nào được tạo.</td></tr>
+                        <tr><td colspan="3" class="text-center text-muted py-4">Chưa có banner nào.</td></tr>
                     <% } %>
                 </tbody>
             </table>

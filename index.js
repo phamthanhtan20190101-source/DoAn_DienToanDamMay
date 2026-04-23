@@ -17,6 +17,8 @@ const ThongBao = require('./models/thongbao');
 const appRoutes = require('./routers'); 
 
 const app = express();
+// Cấp quyền truy cập công khai cho thư mục 'public'
+app.use(express.static('public'));
 const port = 3000;
 
 // --- 4. CẤU HÌNH MIDDLEWARE & SESSION ---
