@@ -13,21 +13,21 @@ function simpleChatReply(message = '') {
     const text = message.toString().trim().toLowerCase();
 
     if (!text) {
-        return 'Chào Vy! Mình là Trạm Trưởng. Bạn cần mình giúp gì về Văn học không?';
+        return 'Chào bạn! Mình là Trạm Trưởng. Bạn cần mình giúp gì về Văn học không?';
     }
     if (text.includes('chào') || text.includes('xin chào') || text.includes('hello')) {
-        return 'Chào Vy! Mình là Trạm Trưởng. Mình có thể giúp Vy tìm bài, chọn thể loại hoặc gửi bài.';
+        return 'Chào bạn! Mình là Trạm Trưởng. Mình có thể giúp bạn tìm bài, chọn thể loại hoặc gửi bài.';
     }
     if (text.includes('gửi bài') || text.includes('đăng bài') || text.includes('nộp bài')) {
-        return 'Để gửi bài, Vy vào mục Gửi Bài Viết và điền thông tin, tệp đính kèm Word/PDF nhé.';
+        return 'Để gửi bài, bạn vào mục Gửi Bài Viết và điền thông tin, tệp đính kèm Word/PDF nhé.';
     }
     if (text.includes('thư viện') || text.includes('tài liệu')) {
-        return 'Vy có thể khám phá các bài viết trong mục Thư Viện Tài Liệu hoặc trên trang chủ.';
+        return 'Bạn có thể khám phá các bài viết trong mục Thư Viện Tài Liệu hoặc trên trang chủ.';
     }
     if (text.includes('cảm nhận') || text.includes('góc cảm nhận')) {
-        return 'Góc Cảm Nhận hiển thị bài viết tản mạn và cảm xúc của cộng đồng. Vy thử vào mục Góc Cảm Nhận nhé.';
+        return 'Góc Cảm Nhận hiển thị bài viết tản mạn và cảm xúc của cộng đồng. Bạn thử vào mục Góc Cảm Nhận nhé.';
     }
-    return 'Trạm Trưởng chưa hiểu rõ lắm. Vy thử hỏi về bài viết, gửi bài, hoặc mục Thư Viện Tài Liệu nhé.';
+    return 'Trạm Trưởng chưa hiểu rõ lắm. Bạn thử hỏi về bài viết, gửi bài, hoặc mục Thư Viện Tài Liệu nhé.';
 }
 // Import các Models
 const BaiVan = require('../models/baivan');
@@ -39,7 +39,7 @@ const ChuDe = require('../models/chude');
 const Banner = require('../models/banner');
 const BinhLuan = require('../models/binhluan');
 
-// 1. CẤU HÌNH UPLOAD & GOOGLE DRIVE
+//CẤU HÌNH UPLOAD & GOOGLE DRIVE
 const upload = multer({ dest: 'uploads/' });
 const oauth2Client = new google.auth.OAuth2(
     process.env.GOOGLE_CLIENT_ID,
@@ -52,21 +52,17 @@ oauth2Client.setCredentials({ refresh_token: process.env.GOOGLE_REFRESH_TOKEN })
 const drive = google.drive({ version: 'v3', auth: oauth2Client });
 const FOLDER_ID = '1Vl98WrQU_ET7aACKP4autYyWenefWeB8'; 
 
-// ==========================================
 // PHẦN 1: GIAO DIỆN NGƯỜI DÙNG (USER)
-// ==========================================
-
-// Trang chủ: Hiển thị bài viết mới nhất
 // Trang chủ: Hiển thị bài viết mới nhất 
 router.get('/', async (req, res) => {
     try {
-        // 1. Lấy danh sách Banner đang Bật
+        //Lấy danh sách Banner đang Bật
         const danhSachBanner = await Banner.find({ TrangThai: true }).sort({ createdAt: -1 });
 
-        // 2. Lấy danh sách Chủ đề để cuộn ngang (Lấy 3 chủ đề)
+        //Lấy danh sách Chủ đề để cuộn ngang (Lấy 3 chủ đề)
         const cacChuDe = await ChuDe.find().limit(3);
         
-        // 3. Lọc bài viết cho từng Chủ đề
+        //Lọc bài viết cho từng Chủ đề
         let baiVietTheoChuDe = [];
         for (let cd of cacChuDe) {
             // Tìm các bài văn có chứa ID chủ đề này, lấy 8 bài để cuộn ngang
@@ -113,7 +109,7 @@ router.get('/', async (req, res) => {
     }
 });
 
-// Route hiển thị Thư viện (phong cách Tao Đàn)
+// Route hiển thị Thư viện 
 router.get('/danh-sach', async (req, res) => {
     try {
         const selectedCate = req.query.theloai;
@@ -305,7 +301,7 @@ router.post('/upload', upload.single('essayFile'), async (req, res) => {
             DriveFileId: driveRes.data.id,
             TrangThai: isAdmin ? 'DaDuyet' : 'ChoDuyet'
         });
-
+// Lưu bài viết vào Database
         await newPost.save();
         fs.unlinkSync(file.path); // Xóa file tạm trong thư mục uploads/
         
@@ -319,10 +315,7 @@ router.post('/upload', upload.single('essayFile'), async (req, res) => {
     }
 });
 
-// ==========================================
-// PHẦN 2: CHỨC NĂNG QUẢN TRỊ (ADMIN)
-// ==========================================
-
+// CHỨC NĂNG QUẢN TRỊ (ADMIN)
 // Kiểm tra quyền Admin
 const checkAdmin = (req, res, next) => {
     if (req.session.user && req.session.user.QuyenHan.toLowerCase() === 'admin') {
@@ -331,10 +324,7 @@ const checkAdmin = (req, res, next) => {
         res.status(403).send('Cấm truy cập: Bạn không có quyền quản trị.');
     }
 };
-// ==========================================
-// QUẢN LÝ CHỦ ĐỀ (Góc chữa lành, Sĩ tử 12...)
-// ==========================================
-
+// QUẢN LÝ CHỦ ĐỀ (Góc chữa lành, Sĩ tử 12...
 // 1. Hiển thị trang Quản lý Chủ đề
 router.get('/admin/quan-ly-chu-de', checkAdmin, async (req, res) => {
     try {
