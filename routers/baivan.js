@@ -50,14 +50,14 @@ const oauth2Client = new google.auth.OAuth2(
 oauth2Client.setCredentials({ refresh_token: process.env.GOOGLE_REFRESH_TOKEN });
 
 const drive = google.drive({ version: 'v3', auth: oauth2Client });
-const FOLDER_ID = '1Vl98WrQU_ET7aACKP4autYyWenefWeB8'; // <--- Đảm bảo ID này chính xác
+const FOLDER_ID = '1Vl98WrQU_ET7aACKP4autYyWenefWeB8'; 
 
 // ==========================================
 // PHẦN 1: GIAO DIỆN NGƯỜI DÙNG (USER)
 // ==========================================
 
 // Trang chủ: Hiển thị bài viết mới nhất
-// Trang chủ: Hiển thị bài viết mới nhất (Đã nâng cấp Zing MP3 Modules)
+// Trang chủ: Hiển thị bài viết mới nhất 
 router.get('/', async (req, res) => {
     try {
         // 1. Lấy danh sách Banner đang Bật
