@@ -113,7 +113,9 @@ app.get('/setup', async (req, res) => {
     }
 });
 
+
 // --- 8. KHỞI CHẠY SERVER ---
-app.listen(port, () => {
-    console.log(`🚀 Server Trạm Văn đang chạy tại http://localhost:${port}`);
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+    console.log(`🚀 Server Trạm Văn đang chạy tại port ${PORT}`);
 });
